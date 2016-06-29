@@ -25,6 +25,7 @@
 
 import spack
 from spack.version import *
+from spack.util.spack_yaml import syaml_dict
 
 class PreferredPackages(object):
     _default_order = {'compiler' : [ 'gcc', 'intel', 'clang', 'pgi', 'xlc' ] } # Arbitrary, but consistent
@@ -41,7 +42,7 @@ class PreferredPackages(object):
             pkglist.append('all')
         for pkg in pkglist:
             order = self.preferred.get(pkg, {}).get(component, {})
-            if type(order) is dict:
+            if type(order) is syaml_dict:
                 order = order.get(second_key, {})
             if not order:
                 continue
@@ -144,7 +145,7 @@ class PreferredPackages(object):
 
     def spec_has_preferred_provider(self, pkgname, provider_str):
         """Return True iff the named package has a list of preferred provider"""
-        return bool(self._order_for_package(pkgname, 'providers', provider_str, False))
+        return bool(self._order_for_package(pkgname, 'providers', provider_str))
 
 
     def version_compare(self, pkgname, a, b):
