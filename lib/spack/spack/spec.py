@@ -967,8 +967,7 @@ class Spec(object):
         assert(self.virtual)
         for name, dependent in self.dependents.items():
             # remove self from all dependents.
-            del dependent.dependencies[self.name]
-
+            dependent.dependencies.pop(self.name, None)
             # add the replacement, unless it is already a dep of dependent.
             if concrete.name not in dependent.dependencies:
                 dependent._add_dependency(concrete)
