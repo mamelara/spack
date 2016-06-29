@@ -47,8 +47,11 @@ class Cnl(OperatingSystem):
                 os.environ['MODULEPATH'] = module_paths
         
             output = modulecmd('avail', cmp_cls.PrgEnv_compiler, output=str, error=str)
-            matches = re.findall(r'(%s)/([\d\.]+[\d])' % cmp_cls.PrgEnv_compiler, output)
-            for name, version in matches:
+            matches = re.findall(r'(%s)/([\d\.]+[\d]).(test)?' % cmp_cls.PrgEnv_compiler, output)
+
+            for name, version, test_compiler in matches:
+                if test_compiler:
+                    continue
                 v = version
                 comp = cmp_cls(spack.spec.CompilerSpec(name + '@' + v), self,
                            ['cc', 'CC', 'ftn'], [cmp_cls.PrgEnv, name +'/' + v])
