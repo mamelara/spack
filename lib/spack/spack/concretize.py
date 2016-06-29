@@ -84,8 +84,7 @@ class DefaultConcretizer(object):
             raise NoBuildError(spec)
 
         def cmp_externals(a, b):
-            if a.name != b.name and (not a.external or a.external_module and
-                    not b.external and b.external_module):
+            if a.name != b.name and not a.external and not b.external:
                 # We're choosing between different providers, so
                 # maintain order from provider sort
                 return candidates.index(a) - candidates.index(b)
@@ -252,6 +251,9 @@ class DefaultConcretizer(object):
         """If the spec already has variants filled in, return.  Otherwise, add
            the default variants from the package specification.
         """
+        if spec.external:
+            return False
+
         changed = False
         for name, variant in spec.package_class.variants.items():
             if name not in spec.variants:
