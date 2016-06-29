@@ -73,9 +73,6 @@ def compiler_find(args):
     """Search either $PATH or a list of paths OR MODULES for compilers and add them
        to Spack's configuration."""
     paths = args.add_paths
-    if not paths:
-        paths = get_path('PATH')
-
     # Don't initialize compilers config via compilers.get_compiler_config. 
     # Just let compiler_find do the 
     # entire process and return an empty config from all_compilers
