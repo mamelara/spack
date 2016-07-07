@@ -304,6 +304,7 @@ section_schemas = {
                             }
                         }
                     },
+                    'merge': { 'type': "boolean", "default": False},
                     'autoload': {'$ref': '#/definitions/dependency_selection'},
                     'prerequisites': {'$ref': '#/definitions/dependency_selection'},
                     'conflict': {'$ref': '#/definitions/array_of_strings'},
