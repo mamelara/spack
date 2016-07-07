@@ -167,7 +167,7 @@ def parse_config_options(module_generator):
     """
     # Get the configuration for this kind of generator
     module_configuration = copy.deepcopy(CONFIGURATION.get(
-        module_generator.name, {}))
+    module_generator.name, {}))
 
     #####
     # Merge all the rules
@@ -380,6 +380,7 @@ class EnvModule(object):
 
         # Parse configuration file
         module_configuration, conf_env = parse_config_options(self)
+        print module_configuration
         env.extend(conf_env)
         filters = module_configuration.get('filter', {}).get(
             'environment_blacklist', {})
@@ -398,7 +399,9 @@ class EnvModule(object):
             module_file_content += line
         for line in self.module_specific_content(module_configuration):
             module_file_content += line
-
+        if module_configuration.get('merge', False):
+            print "ADDING TO FILE NERSC STUFF"
+            module_file_content += self.module_file_merge
         # Dump to file
         with open(self.file_name, 'w') as f:
             f.write(module_file_content)
@@ -450,7 +453,10 @@ class EnvModule(object):
             except OSError:
                 # removedirs throws OSError on first non-empty directory found
                 pass
-
+    
+    @property
+    def module_file_merge(self):
+        return tuple()
 
 class Dotkit(EnvModule):
     name = 'dotkit'
@@ -491,7 +497,6 @@ class Dotkit(EnvModule):
         tty.warn('\tYou may want to check  ~/.spack/modules.yaml')
         return ''
 
-
 class TclModule(EnvModule):
     name = 'tcl'
 
@@ -521,7 +526,7 @@ class TclModule(EnvModule):
         timestamp = datetime.datetime.now()
         # TCL Modulefile header
         header = '#%Module1.0\n'
-        header += '## Module file created by spack (https://github.com/LLNL/spack) on %s\n' % timestamp  # NOQA: ignore=E501
+        header += '"## Module file created by spack (https://github.com/LLNL/spack) on %s\n' % timestamp  # NOQA: ignore=E501
         header += '##\n'
         header += '## %s\n' % self.spec.short_spec
         header += '##\n'
@@ -561,3 +566,12 @@ class TclModule(EnvModule):
                         raise SystemExit('Module generation aborted.')
                 line = line.format(**naming_tokens)
             yield line
+
+    @property
+    def module_file_merge(self):
+        return """if { [ info exists env(PE_ENV) ] } {
+                set compiler $env(PE_ENV) 
+            } else {
+                set compiler GNU
+            }""" 
+
