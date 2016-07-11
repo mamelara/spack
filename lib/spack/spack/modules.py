@@ -401,7 +401,8 @@ class EnvModule(object):
             module_file_content += line
         if module_configuration.get('merge', False):
             print "ADDING TO FILE NERSC STUFF"
-            module_file_content += self.module_file_merge
+            module_file_content += self.compiler_block
+            module_file_content += self.pe_support_block
         # Dump to file
         with open(self.file_name, 'w') as f:
             f.write(module_file_content)
@@ -455,7 +456,11 @@ class EnvModule(object):
                 pass
     
     @property
-    def module_file_merge(self):
+    def compiler_block(self):
+        return tuple()
+
+    @property
+    def pe_support_block(self):
         return tuple()
 
 class Dotkit(EnvModule):
@@ -517,6 +522,15 @@ class TclModule(EnvModule):
 
     default_naming_format = '{name}-{version}-{compiler.name}-{compiler.version}'  # NOQA: ignore=E501
 
+    check_compiler_block = ("if { [info exists $env{prg_env} ] } {\n"
+                            "  set compiler $env{prg_env}\n"
+                            "} else {\n"
+                            "  set compiler {compiler}\n\n")
+
+    pe_support = ('set supported {compiled_prg_envs}\n'
+                  'if { lsearch $supported $compiler ] >= 0 } {\n'
+                  '  set compiler_lc [string tolower {compiler} ]\n')
+
     @property
     def file_name(self):
         return join_path(spack.share_path, "modules", self.spec.architecture, self.use_name)
@@ -568,10 +582,11 @@ class TclModule(EnvModule):
             yield line
 
     @property
-    def module_file_merge(self):
-        return """if { [ info exists env(PE_ENV) ] } {
-                set compiler $env(PE_ENV) 
-            } else {
-                set compiler GNU
-            }""" 
+    def compiler_block(self):
+        return self.check_compiler_block
+
+    @property
+    def pe_support_block(self):
+        return self.pe_support
+
 
