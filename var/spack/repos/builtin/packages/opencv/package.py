@@ -57,6 +57,8 @@ class Opencv(Package):
     depends_on('eigen', when='+eigen', type='build')
     depends_on('cmake', type='build')
 
+    extends('python')
+
     # FIXME : GUI extensions missing
     # FIXME : CUDA extensions still missing
 
@@ -68,6 +70,19 @@ class Opencv(Package):
                               '-DBUILD_SHARED_LIBS:BOOL=%s' % ('ON' if '+shared' in spec else 'OFF'),
                               '-DENABLE_PRECOMPILED_HEADERS:BOOL=OFF',
                               '-DWITH_IPP:BOOL=%s' % ('ON' if '+ipp' in spec else 'OFF')])
+
+        python_prefix = spec['python'].prefix
+        python_lib = python_prefix.lib
+        if spec.satisfies('^python@3:'):
+            python = join_path(python_prefix.bin, 'python3')
+            cmake_options.extend(['-DBUILD_opencv_python3=ON',
+                                  '-DPYTHON_EXECUTABLE={0}'.format(python),
+                                  '-DPYTHON_LIBRARIES={0}'.format(python_lib)])
+        elif spec.satisfies('^python@2:3'):
+            python = join_path(python_prefix.bin, 'python2')
+            cmake_options.extend(['-DBUILD_opencv_python2=ON',
+                                  '-DPYTHON_EXECUTABLE={0}'.format(python),
+                                  '-DPYTHON_LIBRARIES={0}'.format(python_lib)])
 
         with working_dir('spack_build', create=True):
             cmake('..', *cmake_options)
