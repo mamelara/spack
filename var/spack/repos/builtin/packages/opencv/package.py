@@ -51,6 +51,13 @@ class Opencv(Package):
 
     variant('eigen', default=True, description='Activates support for eigen')
     variant('ipp', default=True, description='Activates support for IPP')
+<<<<<<< c79e98e0d450ff0334241c22d2d67216f235b1ed
+=======
+    variant('cuda', default=False, description='Activates support for CUDA')
+    variant('gtk', default=False, description='Activates support for GTK')
+    variant('vtk', default=False, description='Activates support for VTK')
+    variant('qt', default=False, description='Activates support for QT')
+>>>>>>> opencv : Add GUI support
 
     depends_on('zlib')
     depends_on('libpng')
@@ -60,6 +67,7 @@ class Opencv(Package):
     depends_on('python')
     depends_on('py-numpy')
 
+<<<<<<< c79e98e0d450ff0334241c22d2d67216f235b1ed
     depends_on('eigen', when='+eigen', type='build')
     depends_on('cmake', type='build')
 
@@ -68,6 +76,16 @@ class Opencv(Package):
     # FIXME : GUI extensions missing
     # FIXME : CUDA extensions still missing
 
+=======
+    depends_on('eigen', when='+eigen')
+    depends_on('cuda', when='+cuda')
+    depends_on('gtkplus', when='+gtk')
+    depends_on('vtk', when='+vtk')
+    depends_on('qt', when='+qt')
+
+    extends('python')
+
+>>>>>>> opencv : Add GUI support
     def install(self, spec, prefix):
         cmake_options = []
         cmake_options.extend(std_cmake_args)
@@ -81,7 +99,18 @@ class Opencv(Package):
              '-DWITH_IPP:BOOL=%s' % (
                 'ON' if '+ipp' in spec else 'OFF'),
              '-DWITH_CUDA:BOOL=%s' % (
-                'ON' if '+cuda' in spec else 'OFF')])
+                'ON' if '+cuda' in spec else 'OFF'),
+             '-DWITH_QT:BOOL=%s' % (
+                'ON' if '+qt' in spec else 'OFF'),
+             '-DWITH_VTK:BOOL=%s' % (
+                'ON' if '+vtk' in spec else 'OFF')])
+
+        if '^gtkplus@3:' in spec:
+            cmake_options.extend(['-DWITH_GTK:BOOL=ON',
+                                  '-DWITH_GTK_2_X:BOOL=OFF'])
+        elif '^gtkplus@2:3' in spec:
+            cmake_options.extend(['-DWITH_GTK:BOOL=OFF',
+                                  '-DWITH_GTK_2_X:BOOL=ON'])
 
         python_prefix = spec['python'].prefix
         python_lib = python_prefix.lib
