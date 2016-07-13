@@ -91,6 +91,10 @@ class Opencv(Package):
     depends_on('py-numpy', when='+python')
 
     extends('python', when='+python')
+    depends_on('eigen', when='+eigen')
+    depends_on('cuda', when='+cuda')
+
+    # FIXME : GUI extensions missing
 
     def install(self, spec, prefix):
         cmake_options = []
