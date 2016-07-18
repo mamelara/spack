@@ -58,6 +58,8 @@ class Opencv(Package):
     variant('qt', default=False, description='Activates support for QT')
     variant('python', default=False,
             description='Enables the build of Python extensions')
+    variant('java', default=False,
+            description='Activates support for Java')
 
     depends_on('zlib')
     depends_on('libpng')
@@ -80,6 +82,7 @@ class Opencv(Package):
     depends_on('gtkplus', when='+gtk')
     depends_on('vtk', when='+vtk')
     depends_on('qt', when='+qt')
+    depends_on('jdk', when='+java')
 
     depends_on('py-numpy', when='+python')
 
@@ -102,7 +105,9 @@ class Opencv(Package):
             '-DWITH_QT:BOOL={0}'.format((
                 'ON' if '+qt' in spec else 'OFF')),
             '-DWITH_VTK:BOOL={0}'.format((
-                'ON' if '+vtk' in spec else 'OFF'))
+                'ON' if '+vtk' in spec else 'OFF')),
+            '-DBUILD_opencv_java:BOOL={0}'.format((
+                'ON' if '+java' in spec else 'OFF')),
         ])
 
         if '+gtk' not in spec:
