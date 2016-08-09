@@ -115,15 +115,19 @@ class MakeExecutable(Executable):
 
         return super(MakeExecutable, self).__call__(*args, **kwargs)
 
-
+def create_module_cmd():
+    modulecmd = which("modulecmd")
+    modulecmd.add_default_arg("python")
+    return modulecmd
+        
 def load_module(mod):
     """Takes a module name and removes modules until it is possible to
     load that module. It then loads the provided module. Depends on the
     modulecmd implementation of modules used in cray and lmod.
     """
     # Create an executable of the module command that will output python code
-    modulecmd = which('modulecmd')
-    modulecmd.add_default_arg('python')
+
+    modulecmd = create_module_cmd()
 
     # Read the module and remove any conflicting modules
     # We do this without checking that they are already installed
@@ -144,8 +148,7 @@ def get_path_from_module(mod):
     at which the library supported by said module can be found.
     """
     # Create a modulecmd executable
-    modulecmd = which('modulecmd')
-    modulecmd.add_default_arg('python')
+    modulecmd = create_module_cmd()
 
     # Read the module
     text = modulecmd('show', mod, output=str, error=str).split('\n')
