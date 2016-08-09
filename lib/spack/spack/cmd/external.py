@@ -23,8 +23,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
 import argparse
-
+import re
 import spack
+from spack.build_environment import create_modulecmd
 import spack.cmd
 from spack.spec import Spec
 
@@ -34,23 +35,51 @@ def setup_parser(subparser):
     """Can enter either via path or module name. Compiler spec should be
        provided """
 
-    subparser.add_argument("path", nargs="?", help="supply path")
-    subparser.add_argument("-m","--module", nargs="?",
+    subparser.add_argument("package_name", 
+                           help="supply the base name for package")
+    subparser.add_argument("-p", "--path", help="supply path")
+    subparser.add_argument("-m","--module", 
                            help="supplied name is a module name")
     subparser.add_argument("cspec", nargs="+", help="compiler spec to use")
 
-def external(parser, args):
-    print args.__dict__
-    if args.path:
-        path = args.path
-    elif args.module:
-        module = args.module
 
-    if not cspec:
-        tty("Please provide a Compiler Spec for the external module")
+def external(subparser, args):
+    matches = grep_for_package_name(args) # Grep for either path or module
+    specs = []
+    for name, version, default in matches:
+        specs.extend(create_specs(name, version, args.cspec))
+    # Output to stdout because it would also be cool for people to see what
+    # Is being written
+
+
+def grep_for_package_name(args):
+    modulecmd = create_modulecmd()
+
+    if args.module:
+        external_name = args.module
+        output = modulecmd("avail", external_name, output=str, error=str)
+        module_regex = r'({0})/([.\d]+)(\(default\))?'.format(external_name)
+        matches = re.findall(module_regex, output)
+    
+    elif args.path:
+        external_name = args.path
+    
+    return matches
+
+
+def create_specs(name, version, cspec):
+    package_specs = []
+    for c in cspec:
+        spec_string = "{0}@{1}{2}".format(name, version, c)
+        spec = Spec(spec_string)
+        spec.concretize()
+        package_specs.append(spec)
+    return package_specs
+
+
+def create_json_entry(name, version):
+    """ Create a json entry that we can simply append or create the json
+    file to append to. Some helper functions might already exist for the
+    creation
+    """
     pass
-
-
-
-
-
