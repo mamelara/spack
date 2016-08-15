@@ -81,6 +81,7 @@ test_names = [
     'yaml',
     # This test needs to be last until global compiler cache is fixed.
     'cmd.test_compiler_cmd',
+    'cmd.external'
 ]
 
 
