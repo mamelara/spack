@@ -25,7 +25,7 @@
 import argparse
 import re
 import spack
-from spack.build_environment import create_modulecmd
+from spack.build_environment import create_module_cmd
 import spack.cmd
 from spack.spec import Spec
 
@@ -53,7 +53,7 @@ def external(subparser, args):
 
 
 def grep_for_package_name(args):
-    modulecmd = create_modulecmd()
+    modulecmd = create_module_cmd()
 
     if args.module:
         external_name = args.module
@@ -73,13 +73,24 @@ def create_specs(name, version, cspec):
         spec_string = "{0}@{1}{2}".format(name, version, c)
         spec = Spec(spec_string)
         spec.concretize()
-        package_specs.append(spec)
+        package_specs.append((spec, name))
     return package_specs
 
 
-def create_json_entry(name, version):
+def create_json_entry(base_name, list_of_specs):
     """ Create a json entry that we can simply append or create the json
     file to append to. Some helper functions might already exist for the
     creation
     """
-    pass
+    module_dict = {}      
+    module_dict[base_name] = {}
+    module_dict[base_name]['modules'] = {}
+
+    for s, name in list_of_specs:
+        module_dict[base_name]['modules'].update({s : name})
+
+    return module_dict
+
+
+
+
