@@ -27,6 +27,7 @@ import re
 import spack
 from spack.build_environment import create_module_cmd
 import spack.cmd
+import spack.config
 from spack.spec import Spec
 
 description = "Create an external spec from a given module name"
@@ -50,7 +51,8 @@ def external(subparser, args):
         specs.extend(create_specs(name, version, args.cspec))
     # Output to stdout because it would also be cool for people to see what
     # Is being written
-
+    yaml_entry = create_json_entry(args.package_name, specs)
+    spack.config.update_config("packages", yaml_entry)
 
 def grep_for_package_name(args):
     modulecmd = create_module_cmd()
