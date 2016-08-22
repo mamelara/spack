@@ -63,7 +63,7 @@ def grep_for_package_name(args):
         module_regex = r'({0})/([.\d]+)(\(default\))?'.format(external_name)
         matches = re.findall(module_regex, output)
     
-    elif args.path:
+    elif args.path: # Need to some how work through the path
         external_name = args.path
     
     return matches
@@ -85,11 +85,10 @@ def create_json_entry(base_name, list_of_specs):
     creation
     """
     module_dict = {}      
-    module_dict[base_name] = {}
-    module_dict[base_name]['modules'] = {}
+    module_dict[base_name] = {"buildable": False, "modules" : {}}
 
     for s, name in list_of_specs:
-        module_dict[base_name]['modules'].update({s : name})
+        module_dict[base_name]['modules'].update({str(s) : name})
 
     return module_dict
 
