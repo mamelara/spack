@@ -3,6 +3,7 @@ from spack.test.mock_packages_test import *
 from spack.build_environment import create_module_cmd
 from spack.spec import Spec
 from spack.util import spack_yaml 
+import spack.config
 import spack.cmd.external
 
 class MockArgs(object):
@@ -58,15 +59,40 @@ class ExternalCmdTest(MockPackagesTest):
         list_of_specs.extend([(spec_clang, "cray-hdf5"), 
                               (spec_gcc, "cray-hdf5")])
         
-        yaml_expected = {"hdf5" : 
-                            { "modules" : 
-                                  {spec_clang : "cray-hdf5",
-                                   spec_gcc : "cray-hdf5" }}}
+        yaml_expected = {"hdf5" :    
+                            {"buildable": False, 
+                             "modules" : 
+                             {str(spec_clang) : "cray-hdf5",
+                              str(spec_gcc) : "cray-hdf5" }}}
 
         yaml_actual = spack.cmd.external.create_json_entry("hdf5",
                                                            list_of_specs)
 
         self.assertEqual(yaml_expected, yaml_actual)
+
+    def test_append_to_yaml(self):
+        """ Test that the dicts we created from packages can be written
+            to packages.yaml
+        """
+        old_yaml_dict = spack.config.get_config("packages") 
+        list_of_specs = []
+        spec_clang = Spec("cray-hdf5@1.8.1%clang")
+        spec_gcc   = Spec("cray-hdf5@1.8.1%gcc")
+
+        spec_clang.concretize()
+        spec_gcc.concretize()
+
+        list_of_specs.extend([(spec_clang, "cray-hdf5"),
+                              (spec_gcc, "cray-hdf5")])
+
+        yaml_entry = spack.cmd.external.create_json_entry("hdf5",
+                                                           list_of_specs) 
+        spack.config.update_config("packages", yaml_entry) 
+        new_yaml_dict = spack.config.get_config("packages")
+        
+        self.assertNotEquals(old_yaml_dict, new_yaml_dict)
+        self.assertTrue("hdf5" in new_yaml_dict.keys())
+
         
 
 
