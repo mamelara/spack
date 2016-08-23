@@ -75,7 +75,7 @@ compilers:
     modules: 'None'
 - compiler:
     spec: clang@3.3
-    operating_system: SuSE
+    operating_system: SuSE12
     paths:
       cc: /path/to/clang
       cxx: /path/to/clang++
@@ -106,7 +106,7 @@ compilers:
       cxx: /path/to/g++
       f77: /path/to/gfortran
       fc: /path/to/gfortran
-    operating_system: SuSE
+    operating_system: SuSE12
     spec: gcc@4.5.0
     modules: 'None'
 - compiler:
@@ -153,6 +153,7 @@ packages:
     buildable: False
     modules:
       externalmodule@1.0%gcc@4.5.0: external-module
+      externalmodule@1.0%clang@3.3: external-module
 """
 
 
@@ -189,6 +190,12 @@ class MockPackagesTest(unittest.TestCase):
         # Keep tests from interfering with the actual module path.
         self.real_share_path = spack.share_path
         spack.share_path = tempfile.mkdtemp()
+        # Emulate a opt cray path and create different versions
+        opt_path = tempfile.mkdtemp()
+        self.opt_path_external = os.path.join(opt_path, "opt/cray/pe/hdf5")
+        for v in ["1.8.16", "1.9.2", "2.0.0"]:
+            mkdirp(os.path.join(self.opt_path_external, v))
+        
 
         # Store changes to the package's dependencies so we can
         # restore later.
@@ -217,6 +224,7 @@ class MockPackagesTest(unittest.TestCase):
         spack.repo.swap(self.db)
         spack.config.config_scopes = self.real_scopes
         shutil.rmtree(self.temp_config, ignore_errors=True)
+        shutil.rmtree(self.opt_path_external)
         spack.config.clear_config_caches()
 
         # XXX(deptype): handle deptypes.
