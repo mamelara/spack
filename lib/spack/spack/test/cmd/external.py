@@ -7,7 +7,7 @@ import spack.config
 import spack.cmd.external
 
 class MockArgs(object):
-    def __init__(self, path, module, cspec=[]):
+    def __init__(self, package, path, module, cspec=[]):
         self.path = path
         self.module = module
         self.cspec = cspec
@@ -21,13 +21,28 @@ class ExternalCmdTest(MockPackagesTest):
         all the available greps from hdf5 and put them in some kind of
         pair structure where we have the package name and version number
         """
-        mock_args = MockArgs("", "cray-hdf5")
-        modulecmd = create_module_cmd()
-        output = modulecmd("avail", mock_args.module, output=str, error=str)
-        module_regex = r'({0})/([.\d]+)(\(default\))?'.format(mock_args.module)
-        matches = re.findall(module_regex, output)
+        # Not a robust test since modules all have different names
+        mock_args = MockArgs("hdf5", "", "cray-hdf5", ["%gcc", "%clang"])
+        if spack.architecture.sys_type() == "cray":
+            matches = [('cray-hdf5', '1.10.0'), 
+                    ('cray-hdf5', '1.8.14'), 
+                    ('cray-hdf5', '1.8.16')]
+            self.assertEqual(matches, 
+                            spack.cmd.external.grep_for_package_name(
+                                                                    mock_args))
+        else:
+            return True
+
+    def test_grep_from_path_given(self):
+        """ Given the path type of arg given, it should be able to detect which
+        versions are available and then return a list of tuple pairs """
+        mock_args = MockArgs("hdf5", self.opt_path_external, 
+                             "", ["%gcc", "%clang"])
+        # Need to have fake paths for these packages for the test to work.
+        matches = [("hdf5", "2.0.0"), ("hdf5", "1.8.16"), ("hdf5", "1.9.2")]
         self.assertEqual(matches, 
                          spack.cmd.external.grep_for_package_name(mock_args))
+
 
     def test_spec_creation(self):
         package_specs = []  # specs created manually
@@ -66,7 +81,7 @@ class ExternalCmdTest(MockPackagesTest):
                               str(spec_gcc) : "cray-hdf5" }}}
 
         yaml_actual = spack.cmd.external.create_json_entry("hdf5",
-                                                           list_of_specs)
+                                                           list_of_specs, True)
 
         self.assertEqual(yaml_expected, yaml_actual)
 
@@ -86,13 +101,9 @@ class ExternalCmdTest(MockPackagesTest):
                               (spec_gcc, "cray-hdf5")])
 
         yaml_entry = spack.cmd.external.create_json_entry("hdf5",
-                                                           list_of_specs) 
+                                                           list_of_specs, True) 
         spack.config.update_config("packages", yaml_entry) 
         new_yaml_dict = spack.config.get_config("packages")
         
         self.assertNotEquals(old_yaml_dict, new_yaml_dict)
         self.assertTrue("hdf5" in new_yaml_dict.keys())
-
-        
-
-
