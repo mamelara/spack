@@ -48,55 +48,76 @@ def setup_parser(subparser):
 
 
 def external(subparser, args):
-    matches = grep_for_package_name(args) # Grep for either path or module
-    specs = []
-    for name, version in matches:
-        specs.extend(create_specs(name, version, args.cspec))
-    # Output to stdout because it would also be cool for people to see what
-    # Is being written
-    modules = True
+    specs_dict = {}
+    external, external_type =  "", "" 
 
-    if args.paths:
-        modules = False
+    matches = get_versions_from_args(args) # Find versions from mod or path
+    name = get_package_name(matches) 
+    version_list = get_version_list(matches) 
 
-    yaml_entry = create_json_entry(args.package_name, specs, modules)
+    if args.module:
+        external = args.module
+        external_type = "modules"
+    else:
+        external = args.path
+        external_type = "paths"
+
+    for v in version_list:
+        specs_dict.update(_create_yaml_dict(name, v, args.cspec, external))
+    
+    yaml_entry = _create_json_entry(name, specs_dict, external_type)
     spack.config.update_config("packages", yaml_entry)
 
 
-def grep_for_package_name(args):
-    modulecmd = create_module_cmd()
+def get_package_name(match_list):
+    return match_list[0]
 
+
+def get_version_list(match_list):
+    return match_list[1]
+
+
+def get_versions_from_args(args):
+    matches = []
     if args.module:
-        external_name = args.module
-        output = modulecmd("avail", external_name, output=str, error=str)
-        module_regex = r'({0})/([.\d]+)'.format(external_name)
-        #module_regex = r'({0})/([.\d]+)(\(default\))?'.format(external_name)
-        matches = re.findall(module_regex, output)
-    
-    elif args.path: # Need to some how work through the path
-        matches = []
-        external_path = args.path
-        base_name = os.path.basename(external_path)
-        dir_list = first_level_directory(external_path)
-        for ver in dir_list:
-            if represents_string_version(ver):
-                matches.append((base_name, ver)) 
-    
+        matches = _get_versions_from_modules(args)
+    else:
+        matches = _get_versions_from_path(args)
     return matches
 
 
-def get_versions(path):
-    """Check if path name has a version attached to it. If so grab it for
-       creating the spec """
-    pass
+def _get_versions_from_modules(args):
+    modulecmd = create_module_cmd()
+    matches = [args.package_name]
+    output = modulecmd("avail", args.module, output=str, error=str)
+    module_regex = r'{0}/([.\d]+)'.format(args.module)
+    version_list = re.findall(module_regex, output)
+    matches.append(version_list)
+    return matches
 
 
-def first_level_directory(path):
+def _get_versions_from_path(args):
+    matches = [args.package_name]
+    version_list = []
+    external_path = args.path
+
+    base_name = os.path.basename(external_path)
+    # Need a way to check various different ways versions could exist via
+    # a path. 
+    dir_list = _first_level_directory(external_path)
+
+    for ver in dir_list:
+        if _represents_string_version(ver):
+            version_list.append(ver)
+    matches.append(version_list)
+    return matches
+
+def _first_level_directory(path):
     """Get the first level of a directory """
     return os.walk(path).next()[1]
 
 
-def represents_string_version(dirname):
+def _represents_string_version(dirname):
     """ Check if directory name follows a version number """
     # Kinda hacky since we assume that versions just have period delimiters
     try:
@@ -107,31 +128,20 @@ def represents_string_version(dirname):
         return False
     
 
-def create_specs(name, version, cspec):
+def _create_yaml_dict(name, version, cspec, external):
     """ Create specs from the base_name, version and compiler specs added """
-    package_specs = []
-
+    package_specs = {}
     for c in cspec:
         spec_string = "{0}@{1}{2}".format(name, version, c)
-        spec = Spec(spec_string)
-        spec.concretize()
-        package_specs.append((spec, name))
+        package_specs[spec_string] = external
 
     return package_specs
 
 
-def create_json_entry(base_name, list_of_specs, modules):
+def _create_json_entry(base_name, specs, external_type):
     """ Create a json entry that we can simply append or create the json
     file to append to."""
-    external_type = "modules"
-
-    if not modules:
-        external_type = "paths"
-
     module_dict = {}      
     module_dict[base_name] = {"buildable": False, external_type : {}}
-
-    for s, name in list_of_specs:
-        module_dict[base_name][external_type].update({str(s) : name})
-
+    module_dict[base_name][external_type].update(specs)
     return module_dict
