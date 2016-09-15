@@ -190,12 +190,21 @@ class MockPackagesTest(unittest.TestCase):
         # Keep tests from interfering with the actual module path.
         self.real_share_path = spack.share_path
         spack.share_path = tempfile.mkdtemp()
+
         # Emulate a opt cray path and create different versions
         opt_path = tempfile.mkdtemp()
+        self.opt_path_package1 = os.path.join(opt_path, "opt/openmpi-1.4.3")
+        self.opt_path_package2 = os.path.join(opt_path, "opt/openmpi/1.4.3")
+        self.opt_path_package3 = os.path.join(opt_path, 
+                                              "opt/openmpi-1.4.3-6asd2easdar3")
+        self.opt_path_package4 = os.path.join(opt_path, "opt/openmpi-1.2")
+        mkdirp(self.opt_path_package2, "1.4.3")
+        mkdirp(self.opt_path_package1, "bin")
+        mkdirp(self.opt_path_package3, "bin")
+        mkdirp(self.opt_path_package4, "bin")
         self.opt_path_external = os.path.join(opt_path, "opt/cray/pe/hdf5")
         for v in ["1.8.16", "1.9.2", "2.0.0"]:
-            mkdirp(os.path.join(self.opt_path_external, v))
-        
+            mkdirp(os.path.join(self.opt_path_external, v)) 
 
         # Store changes to the package's dependencies so we can
         # restore later.
@@ -225,6 +234,8 @@ class MockPackagesTest(unittest.TestCase):
         spack.config.config_scopes = self.real_scopes
         shutil.rmtree(self.temp_config, ignore_errors=True)
         shutil.rmtree(self.opt_path_external)
+        shutil.rmtree(self.opt_path_package1)
+        shutil.rmtree(self.opt_path_package2)
         spack.config.clear_config_caches()
 
         # XXX(deptype): handle deptypes.
