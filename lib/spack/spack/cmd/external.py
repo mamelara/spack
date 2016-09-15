@@ -32,22 +32,24 @@ import spack.config
 from spack.spec import Spec
 
 
-description = "Create an external spec from a given module name"
+description = "Create an external spec from a given module name or path"
 
 
 def setup_parser(subparser):
     """Can enter either via path or module name. Compiler spec should be
        provided """
 
-    subparser.add_argument("package_name", 
-                           help="supply the base name for package")
     subparser.add_argument("-p", "--path", help="supply path")
     subparser.add_argument("-m","--module", 
                            help="supplied name is a module name")
+    subparser.add_argument("package_name", 
+                           help="supply the base name for package")
     subparser.add_argument("cspec", nargs="+", help="compiler spec to use")
 
 
 def external(subparser, args):
+    _check_valid_input(args) # Check whether we are missing any pos arguments
+
     specs_dict = {}
     external, external_type =  "", "" 
 
@@ -100,33 +102,55 @@ def _get_versions_from_path(args):
     matches = [args.package_name]
     version_list = []
     external_path = args.path
-
-    base_name = os.path.basename(external_path)
-    # Need a way to check various different ways versions could exist via
-    # a path. 
-    dir_list = _first_level_directory(external_path)
-
-    for ver in dir_list:
-        if _represents_string_version(ver):
-            version_list.append(ver)
+    dir_list = _base_and_first_level_directory(external_path)
+    for v in dir_list:
+            ver = _extract_version_from_string(v)
+            if ver:
+                version_list.append(ver)
     matches.append(version_list)
     return matches
 
-def _first_level_directory(path):
-    """Get the first level of a directory """
-    return os.walk(path).next()[1]
+
+def _base_and_first_level_directory(path):
+    """Get the first level of a directory """ 
+    dir_list = os.walk(path).next()[1]
+    dir_list.append(os.path.basename(path))
+    return dir_list
 
 
 def _represents_string_version(dirname):
     """ Check if directory name follows a version number """
-    # Kinda hacky since we assume that versions just have period delimiters
+    #dirname: libelf-1.8.0  1.8.0  libelf-1.8.0-asdaweaeda
     try:
-        stripped = dirname.strip(".")
-        int(stripped[0])
+        ver = dirname.split(".")
+        print ver
+        int(ver[0])
         return True
     except ValueError:
         return False
-    
+
+
+def _extract_version_from_string(dirname):
+    """Extract the version from a given string """
+    ver = ""
+    if "-" in dirname:
+        file_list = dirname.split("-")
+        ver = file_list[1]
+    elif "." in dirname:
+        ver = dirname  # We probably have a version string
+    if _represents_string_version(ver):
+        return ver
+    else:
+        return None
+
+def _check_valid_input(args):
+    """ Check for valid input. Throw error in case we received incorrect
+    args """
+    package_name = args.package_name
+    if not package_name.isalnum():
+        #TODO: Change it to something nicer than throwing a stack trace
+        raise ValueError("Did not receive valid input for package_name")
+
 
 def _create_yaml_dict(name, version, cspec, external):
     """ Create specs from the base_name, version and compiler specs added """
@@ -140,8 +164,10 @@ def _create_yaml_dict(name, version, cspec, external):
 
 def _create_json_entry(base_name, specs, external_type):
     """ Create a json entry that we can simply append or create the json
-    file to append to."""
-    module_dict = {}      
-    module_dict[base_name] = {"buildable": False, external_type : {}}
-    module_dict[base_name][external_type].update(specs)
-    return module_dict
+    file to append to. Uses the main package name (base_name) given as a
+    command line argument. It then uses the list of specs and external
+    type to construct a yaml dictionary."""
+    package_dict = {}      
+    package_dict[base_name] = {"buildable": False, external_type : {}}
+    package_dict[base_name][external_type].update(specs)
+    return package_dict
