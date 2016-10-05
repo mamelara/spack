@@ -1,4 +1,5 @@
 import argparse
+import spack.architecture
 from spack.test.mock_packages_test import *
 from spack.spec import Spec
 import spack.config
@@ -96,6 +97,20 @@ class ExternalCmdTest(MockPackagesTest):
         actual.sort()
         self.assertEqual(expected, actual)
 
+    def test_create_correct_spec(self):
+        package_name = "externaltool"
+        found_versions = ["1.0"]
+        external_name = "/path/to/external_tool"
+        compiler_specs = ["%clang"]
+        default_arch = spack.architecture.sys_type()
+        
+        expected_spec = "externaltool@1.0%clang@3.3 " + default_arch
+
+        actual_spec = external.create_specs(package_name,
+                                            found_versions,
+                                            external,
+                                            compiler_specs)
+        self.assertEqual(expected_spec, actual_spec)
 
     def test_yaml_dict_creation(self):
         args = MockArgs(module="cray-hdf5",
@@ -181,7 +196,7 @@ class ExternalCmdTest(MockPackagesTest):
         externaltool_path = "/path/to/external_tool"
         args = MockArgs(path=externaltool_path, 
                         package_name="externaltool", 
-                        cspecs=["%gcc@5.3.0", "%clang@3.3", "%gcc@4.5.0"])
+                        cspecs=["%clang@3.3", "%gcc@4.5.0"])
 
         package_info = external.collect_package_info(args, "externaltool", "paths")
         versions = ["1.0"]
@@ -194,8 +209,7 @@ class ExternalCmdTest(MockPackagesTest):
         actual_specs = packages["externaltool"]["paths"].keys()
 
         expected_specs = ["externaltool@1.0%gcc@4.5.0",
-                          "externaltool@1.0%clang@3.3",
-                          "externaltool@1.0%gcc@5.3.0"]
+                          "externaltool@1.0%clang@3.3"]
 
         actual_specs.sort()
         expected_specs.sort()
