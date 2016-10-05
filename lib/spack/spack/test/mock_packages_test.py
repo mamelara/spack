@@ -198,10 +198,10 @@ class MockPackagesTest(unittest.TestCase):
         self.opt_path_package3 = os.path.join(opt_path, 
                                               "opt/openmpi-1.4.3-6asd2easdar3")
         self.opt_path_package4 = os.path.join(opt_path, "opt/openmpi-1.2")
-        mkdirp(self.opt_path_package2, "1.4.3")
-        mkdirp(self.opt_path_package1, "bin")
-        mkdirp(self.opt_path_package3, "bin")
-        mkdirp(self.opt_path_package4, "bin")
+        mkdirp(self.opt_path_package2)
+        mkdirp(self.opt_path_package1)
+        mkdirp(self.opt_path_package3)
+        mkdirp(self.opt_path_package4)
         self.opt_path_external = os.path.join(opt_path, "opt/cray/pe/hdf5")
         for v in ["1.8.16", "1.9.2", "2.0.0"]:
             mkdirp(os.path.join(self.opt_path_external, v)) 
