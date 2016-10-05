@@ -31,20 +31,42 @@ from llnl.util.tty.colify import colify
 import spack
 from spack.build_environment import create_module_cmd
 import spack.cmd
+import spack.compilers
 import spack.config
 import spack.error
 from spack.spec import Spec
 
 
-#USE SPACK.COMPILERS.FIND(SPEC, SCOPE) --> So that people can use args
 description = "Create an external spec from a given module name or path"
 
 
 def setup_parser(subparser):
-    """Can enter either via path or module name. Compiler spec should be
-       provided """
+    """
+    Sets up parser for external add and external rm. The arguments are as
+    follows:
+
+        spack external add [package_name] [-m|-p] [module_name|path_name] ...
+        
+        additional args include:
+        cspecs    - User inputs a compiler spec to create the external entry
+        variant   - optional argument for variant
+
+        The user enters a package name (a common package name i.e hdf5) 
+        and then provides either the -m or -p flag along with either
+        module name or path. The external module will then parse output
+        from the module avail command or search the directory tree for
+        versions.
+
+        spack external rm [-a|--all] [-p|-m] package_spec
+
+        The user enters enters an optional flag -a for all or can 
+        provide a flag -p or -m  to remove an entry in either modules
+        or paths, if it is present. They provide a spec to match entries to 
+        be deleted.
+    """      
     scopes = spack.config.config_scopes
 
+    # Set up subcommands external and rm
     sp = subparser.add_subparsers(metavar="SUBCOMMAND", 
                                   dest = "external_command")
     # external add
@@ -56,12 +78,14 @@ def setup_parser(subparser):
     add_parser.add_argument(
             "package_name", help="supply the base name for package")
     add_parser.add_argument("cspecs", nargs="+", help="compiler spec to use")
+    add_parser.add_argument("-v", "--variant", 
+                            help="supply variant for package")
     add_parser.add_argument("--scope", choices=scopes,
                             default=spack.cmd.default_modify_scope,
                             help="Configuration scope to modify.")
     # external remove
-    rm_parser = sp.add_parser(
-            'remove', aliases=['rm'], help="Remove packages from Spack config file")
+    rm_parser = sp.add_parser('remove', aliases=['rm'], 
+                              help="Remove packages from Spack config file")
     rm_parser.add_argument('-a', '--all', action='store_true',
                            help="Remove entire entry for that external package")
     rm_parser.add_argument("-p", "--paths", action="store_true",
@@ -76,7 +100,7 @@ def setup_parser(subparser):
 def external_add(args):
     check_valid_input(args) # Check whether we are missing any pos arguments
     external_name, external_type =  "", "" 
-    found_versions = find_versions_from_args(args) # Find versions from mod or path
+    found_versions = find_versions_from_args(args)
     
     # Assign to external either the module name or the path to a external pkg
     # Change external_type to the correct label according to user args
@@ -95,14 +119,17 @@ def external_add(args):
 
 
 def collect_package_info(args, external_name, external_type):
+    """Container for relevant information to create packages.yaml entries """
     package_name = args.package_name
     cspecs = args.cspecs
     return {"package_name": package_name,
             "external_name": external_name,
             "external_type": external_type,
-            "cspec": cspecs}
+            "cspec": cspecs,
+            "variant": args.variant}
 
 
+# Below are getters for package information.
 def get_package_name(package):
     return package["package_name"]
 
@@ -119,8 +146,13 @@ def get_compiler_specs(package):
     return package["cspec"]
 
 
+def get_variant_spec(package):
+    return package["variant"]
+
+
 def find_versions_from_modules(args):
-    """ Helper to find versions via modules """
+    """ Helper to find versions via modules. Uses module cmd and
+        then greps output for relevant package name"""
     package_name = args.package_name
     modulecmd = create_module_cmd()
     matches = {}
@@ -198,53 +230,113 @@ def check_valid_input(args):
         raise ValueError("Did not receive valid input for package_name")
 
 
-def create_specs(package_name, found_versions, external, cspec):
+def get_operating_system_from_compiler_spec(compiler_spec):
+    compilers = spack.compilers.compiler_for_spec(compiler_spec.strip("%"))
+    return str(compilers[0].operating_system)
+
+
+def replace_os_in_arch_string(arch_string, compiler_spec):
+    os_string = get_operating_system_from_compiler_spec(compiler_spec)
+    arch = arch_string.split("-")
+    arch[1] = os_string
+    arch = "-".join(arch)
+    return arch
+
+
+def create_specs(package_name, found_versions, external, cspec, variant):
+    """ Construct spec strings from the arguments provided. We first
+    find compilers present in compilers.yaml and then create a spec string
+    from the compiler specs found. If a variant was provided we add to that
+                arch_string = "arch={0}-{1}-{2}".format(
+    to the string. We also add the architecture to the string """
     package_specs = {}
-    for v in found_versions:
-        for c in cspec:
-            spec_string = "{0}@{1}{2}".format(package_name, v, c)
+    compiler_spec = []
+    arch = spack.architecture.sys_type() # Get default arch
+    for comp in cspec: # Find all available compiler specs
+        compiler_spec.extend(spack.compilers.find(comp.strip("%"))) 
+    for ver in found_versions:
+        for comp in compiler_spec:
+            if "cray" in arch: # If cray in arch, replace with correct os
+                arch = replace_os_in_arch_string(arch, comp)
+            spec_string = "{0}@{1}%{2}{3} arch={4}".format(
+                    package_name, ver, comp, variant if variant else "",
+                    arch)
             package_specs[spec_string] = external
     return package_specs    
 
 
 def create_yaml_dict(package_info, versions):
-    """ Create specs from the package name, version and compiler specs added """
+    """ 
+    Packages.yaml entries look like the following: 
+        {package_name: 
+            buildable : False|True,
+            modules|paths:
+                spec : module_name | path}
 
+        We first create the specs and then we merge into a dict containing
+        the external type (modules|paths) and set buildable to False.
+    """            
+    # Unload all the relevant information from our pkg info container
     external_name = get_external_name(package_info)
     package_name = get_package_name(package_info)
     external_type = get_external_type(package_info)
     compiler_specs = get_compiler_specs(package_info)
+    variant = get_variant_spec(package_info)
 
     spec_entries = create_specs(package_name, 
                                 versions, 
                                 external_name, 
-                                compiler_specs)
-    package_dict = {"buildable" : False, external_type : spec_entries}
+                                compiler_specs,
+                                variant)
+
+    # Finish off by adding "header"
+    package_dict = {"buildable" : False, external_type : spec_entries,
+                    "versions" : versions}
     return package_dict
 
 
-def filter_duplicate_specs(package_specs, yaml_specs):
-    return {k : v for k, v in package_specs.items() 
-            if k not in yaml_specs.keys()}
+def get_package_entry(packages, package_name):
+    return packages.get(package_name, {})
+
+
+def get_packages_yaml_config(scope=None):
+    return spack.config.get_config("packages", scope=scope)
 
 
 def get_external_specs(package, external_type):
-    return package[external_type]
+    """ Return specs dict from our package yaml entry """
+    return package.get(external_type, {})
 
 
 def get_specs_from_yaml(packages_yaml, package_name, external_type):
+    """ If present, it will return the specs from a given package. If
+        not it will just return an empty dict """
     return packages_yaml.get(package_name, {}).get(external_type, {})
 
 
-def add_to_packages_yaml(package_yaml, package_info, scope):
-    """ Adds to packages.yaml. First checks if an entry exists if not then we
-    just add to the package, else we filter. """
-    package_name = get_package_name(package_info)
-    external_type = get_external_type(package_info)
-    packages = get_packages_yaml_config(scope)
+def filter_duplicate_specs(package_specs, yaml_specs):
+    """ Helper for filtering out duplicate specs """
+    return {k : v for k, v in package_specs.items() 
+            if k not in yaml_specs.keys()}
 
+def filter_duplicate_versions(old_versions, new_versions)
+    return [v for v in new_versions if v not in old_versions]
+
+def add_to_packages_yaml(package_yaml, package_info, scope):
+    """ Adds to packages.yaml config file. We first check for any duplicate
+        entries. If there are duplicate entries we filter them out. If there
+        are no duplicate entries, or there is no entry for a given package
+        we simply just add the package to packages.yaml
+    """
+    package_name = get_package_name(package_info) 
+    external_type = get_external_type(package_info) # either modules or paths
+    packages = get_packages_yaml_config(scope)
+    
+    # Find specs for a given package
     specs_from_yaml = get_specs_from_yaml(packages, package_name, external_type)
+    # Get specs from our new entry
     new_specs = get_external_specs(package_yaml, external_type)
+
     external_specs = filter_duplicate_specs(new_specs, specs_from_yaml)
 
     if external_specs:
@@ -261,6 +353,7 @@ def add_to_packages_yaml(package_yaml, package_info, scope):
 
 
 def get_external_type_from_args(args):
+    """ Helper to find out what type of external package we are looking for"""
     if args.modules:
         return "modules"
     else:
@@ -273,11 +366,16 @@ def remove_spec_entry(specs_dict, spec):
 
 
 def external_rm(args):
+    """ Remove a spec entry from the configuration file. Description of how
+    the command works provided above in setup_parser. We compare existing 
+    entries. If we find our spec using spec.satisfies, we delete the entry
+    """
+
     external_type = get_external_type_from_args(args)
     packages_yaml = get_packages_yaml_config(args.scope)
     package_spec = Spec(args.external_spec)
     package_name = package_spec.name
-    external_package = packages_yaml.get(package_name, {})
+    external_package = get_package_entry(packages_yaml, package_name)
     
     if not external_package:
         tty.die("No external_packages match spec %s" % package_spec)
@@ -286,7 +384,7 @@ def external_rm(args):
         spack.config.update_config("packages", packages_yaml, 
                                    scope=args.scope)
     else: 
-        specs_dict = external_package.get(external_type, {})
+        specs_dict = get_external_specs(external_package, external_type)
         if specs_dict:
             filtered_config = remove_spec_entry(specs_dict, package_spec)
             if len(filtered_config.keys()) == len(specs_dict.keys()):
@@ -297,10 +395,6 @@ def external_rm(args):
                                        packages_yaml, 
                                        scope=args.scope)
             tty.msg("Removed package spec %s" % package_spec)
-
-
-def get_packages_yaml_config(scope=None):
-    return spack.config.get_config("packages", scope=scope)
 
 
 def external(parser, args):
