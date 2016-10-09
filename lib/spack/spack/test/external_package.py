@@ -32,7 +32,7 @@ def make_mock_external_package(version_output):
 
     with open(external_exe, "w") as f:
         f.write("""\
-#!/bin/sh0
+#!/bin/sh
 
 for arg in "$@"; do
     if [ "$arg" = -v ] || [ "$arg" = --version ]; then
