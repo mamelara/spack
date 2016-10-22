@@ -36,6 +36,7 @@ from spack.test.tally_plugin import Tally
 # All the tests Spack knows about.
 # Keep these one per line so that it's easy to see changes in diffs.
 test_names = [
+    'external_package',
     'architecture',
     'build_system_guess',
     'cc',

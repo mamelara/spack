@@ -115,11 +115,15 @@ class MakeExecutable(Executable):
 
         return super(MakeExecutable, self).__call__(*args, **kwargs)
 
+
 def create_module_cmd():
     modulecmd = which("modulecmd")
-    modulecmd.add_default_arg("python")
-    return modulecmd
+    if modulecmd:
+        modulecmd.add_default_arg("python")
+        return modulecmd
+    return None
         
+
 def load_module(mod):
     """Takes a module name and removes modules until it is possible to
     load that module. It then loads the provided module. Depends on the
