@@ -1,84 +1,61 @@
+import os
 from tempfile import mkdtemp
-from llnl.util.filesystem import set_executable, mkdirp
+from llnl.util.filesystem import mkdirp, join_path
+import spack
 import spack.spec
+from spack.environment import EnvironmentModifications
 from spack.test.mock_packages_test import *
 from spack.external_package import ExternalPackage
 from spack.version import Version
 
-common_test_version = "1.10.11"
-package_name_with_version_test = "external package 1.10.11"
-package_name_with_hypen = "externalpackage-1.10.11"
-package_w_ambiguous_output = "v0.06"
 
-test_versions = [common_test_version,
-                 package_name_with_version_test,
-                 package_name_with_hypen]
+def set_to_modulepath(path):
+    env = EnvironmentModifications()
+    env.append_path("MODULEPATH", path)
+    env.apply_modifications()
+    
 
-
-def make_mock_external_package(version_output):
-    """ Make a directory containing a fake external package. """
-    mock_external_dir = mkdtemp()
-    external_dir = os.path.join(mock_external_dir, 'external_package')
-    share_path = os.path.join(external_dir, "share")
-    include_path = os.path.join(external_dir, "include")
-    bin_path = os.path.join(external_dir, "bin")
-
-    mkdirp(bin_path)
-    mkdirp(share_path)
-    mkdirp(include_path)
-
-    external_exe = os.path.join(bin_path, "externalpackage")
-    command_help = "externalpackage\nUsage: [-adsf] [-h]"
-
-    with open(external_exe, "w") as f:
-        f.write("""\
-#!/bin/sh
-
-for arg in "$@"; do
-    if [ "$arg" = -v ] || [ "$arg" = --version ]; then
-        echo '%s'
-    else
-        echo '%s'
-    fi
-done
-""" % (version_output, command_help))
-
-    set_executable(external_exe)
-    return mock_external_dir
-
-
-def removetree(path):
-    shutil.rmtree(path, ignore_errors=True)
+def remove_from_modulepath(path):
+    env = EnvironmentModifications()
+    env.remove_path("MODULEPATH", path)
+    env.apply_modifications()
 
 
 class TestExternalPackage(MockPackagesTest):
     """ Test external package object """
 
-    def test_package_gets_correct_bin_path(self):
-        external_prefix = make_mock_external_package(common_test_version)
-        spec = spack.spec.Spec("externalpackage%gcc@4.3")
-        try:
-            external_package = ExternalPackage(spec,
-                                               prefix=external_prefix)
-            expected_bin_path = os.path.join(external_prefix,
-                                             "external_package",
-                                             "bin")
-            actual_bin_path = external_package.binary_path()
-            self.assertEqual(expected_bin_path, actual_bin_path)
-        finally:
-            removetree(external_prefix)
+    def setUp(self):
+        set_to_modulepath(spack.mock_modulefiles_path)
+        super(TestExternalPackage, self).setUp()
 
-    def test_different_version_output_cases(self):
-        version_found = []
-        # Can find version but if we use incorrect arg return unknown
-        expected_versions = "1.10.11"
-        spec = spack.spec.Spec("externalpackage%gcc@4.3")
-        for test_version in test_versions:
-            try:
-                external_prefix = make_mock_external_package(test_version)
-                external_package = ExternalPackage(spec, prefix=external_prefix)
-                actual_version = external_package.version()
-                version_found.append((actual_version == expected_versions))
-            finally:
-                removetree(external_prefix) 
-        self.assertTrue(all(version_found))
+    def tearDown(self):
+        remove_from_modulepath(spack.mock_modulefiles_path)
+        super(TestExternalPackage, self).tearDown()
+
+    def test_package_detection_in_paths(self):
+        spec = spack.spec.Spec("externalpackage@1.8.5%gcc@6.1.0")
+        found_package = ExternalPackage.detect_package(
+                                spec, self.external_package_path)
+        expected_package = ExternalPackage(spec, 
+                                           self.external_package_path,
+                                           "paths")
+        self.assertEquals(found_package, expected_package) 
+
+    def test_when_no_package_detected(self):
+        spec = spack.spec.Spec("externalpackage@1.8.5%gcc@6.1.0")
+        path = "/path/to/externaltool"
+        self.assertRaises(SystemExit, ExternalPackage.detect_package, spec, path)
+                                                        
+    def test_when_no_version_in_spec_and_no_version_detected(self):
+        spec = spack.spec.Spec("externalmodule%gcc@4.3")
+        module = "externalmodule"
+        self.assertRaises(SystemExit, ExternalPackage.detect_package, 
+                          spec, module)
+    
+    def test_package_detection_in_modules(self):
+       spec = spack.spec.Spec("externalmodule@1.0%gcc@6.1.0")
+       module_name = "externalmodule"
+       set_to_modulepath(spack.mock_modulefiles_path)
+       found_package = ExternalPackage.detect_package(spec, module_name)
+       expected_package = ExternalPackage(spec, module_name, "modules")
+       self.assertEquals(found_package, expected_package)

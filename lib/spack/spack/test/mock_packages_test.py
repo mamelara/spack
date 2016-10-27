@@ -29,7 +29,7 @@ import unittest
 
 import spack
 import spack.config
-from llnl.util.filesystem import mkdirp
+from llnl.util.filesystem import mkdirp, join_path, touch
 from ordereddict_backport import OrderedDict
 from spack.repository import RepoPath
 from spack.spec import Spec
@@ -193,18 +193,15 @@ class MockPackagesTest(unittest.TestCase):
 
         # Emulate a opt cray path and create different versions
         opt_path = tempfile.mkdtemp()
-        self.opt_path_package1 = os.path.join(opt_path, "opt/openmpi-1.4.3")
-        self.opt_path_package2 = os.path.join(opt_path, "opt/openmpi/1.4.3")
-        self.opt_path_package3 = os.path.join(opt_path, 
-                                              "opt/openmpi-1.4.3-6asd2easdar3")
-        self.opt_path_package4 = os.path.join(opt_path, "opt/openmpi-1.2")
-        mkdirp(self.opt_path_package2)
-        mkdirp(self.opt_path_package1)
-        mkdirp(self.opt_path_package3)
-        mkdirp(self.opt_path_package4)
-        self.opt_path_external = os.path.join(opt_path, "opt/cray/pe/hdf5")
-        for v in ["1.8.16", "1.9.2", "2.0.0"]:
-            mkdirp(os.path.join(self.opt_path_external, v)) 
+        self.external_package_path = join_path(opt_path, "externalpackage", 
+                                               "1.8.5")
+        mkdirp(self.external_package_path)
+        bin_path = join_path(self.external_package_path, "bin")
+        mkdirp(bin_path)
+        touch(join_path(bin_path, "externalpackage"))
+        for path in ["lib", "share", "include"]:
+            package_path = join_path(self.external_package_path, path)
+            mkdirp(package_path)
 
         # Store changes to the package's dependencies so we can
         # restore later.
@@ -233,9 +230,7 @@ class MockPackagesTest(unittest.TestCase):
         spack.repo.swap(self.db)
         spack.config.config_scopes = self.real_scopes
         shutil.rmtree(self.temp_config, ignore_errors=True)
-        shutil.rmtree(self.opt_path_external)
-        shutil.rmtree(self.opt_path_package1)
-        shutil.rmtree(self.opt_path_package2)
+        shutil.rmtree(self.external_package_path, ignore_errors=True)
         spack.config.clear_config_caches()
 
         # XXX(deptype): handle deptypes.
