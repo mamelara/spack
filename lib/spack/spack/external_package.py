@@ -10,22 +10,37 @@ from spack.util.executable import *
 import spack.spec
 
 
-def get_pkg_config():
-    pkg_config = which("pkg-config")
-    return pkg_config
+def _find_external_type(external_package):
+    """ Finds whether the package is a module or a path """
+    if os.path.isdir(external_package):
+        return "paths"
+    else:
+        modulecmd = create_module_cmd()
+        if modulecmd:
+            output = modulecmd("show", external_package, output=str, error=str)
+            if "ERROR" not in output:
+                return "modules"
+        return "unknown"
 
 
-def _detect_version_by_pkgconfig(path):
-    pkg_config = get_pkg_config()
-    regex = r'(^\d+\.[\d\.]*)' 
-    try:
-        output = pkg_config("--modversion", spec.name, output=str, error=str)
-        match = re.search(regex, output)
-        return match.group(0) if match else "unknown"
-    except ProcessError:
-        return None
-    except Exception:
-        return None
+def _validate_package_path_installation(path, spec):
+    """ Determines whether the path or module matches what the user specified
+        in the spec """
+
+    def search_package_directory(path, dirname):
+        """ search package directory for files that match package name"""
+        dirpath = join_path(path, dirname)
+        if os.path.exists(dirpath):
+            files = os.listdir(dirpath)
+            for f in files:
+                if spec.name in f:
+                    return True
+
+    valid_checks = []  # Check bin, lib and share for package name
+    for directory in ["bin", "lib", "share", "include"]:
+        valid_checks.append(search_package_directory(path, directory))
+    if not any(valid_checks):
+        tty.die("Incorrect path: %s for package %s" % (path, spec))
 
 
 def _detect_version_by_prefix(path):
@@ -45,10 +60,21 @@ def _detect_version_by_prefix(path):
             continue
 
 
-def _get_version_from_spec(spec):
+def get_pkg_config():
+    pkg_config = which("pkg-config")
+    return pkg_config
+
+
+def _detect_version_by_pkgconfig(path):
+    pkg_config = get_pkg_config()
+    regex = r'(^\d+\.[\d\.]*)' 
     try:
-        return str(spec.version)
-    except spack.spec.SpecError:
+        output = pkg_config("--modversion", spec.name, output=str, error=str)
+        match = re.search(regex, output)
+        return match.group(0) if match else "unknown"
+    except ProcessError:
+        return None
+    except Exception:
         return None
 
 
@@ -60,13 +86,31 @@ def _detect_version_using_path(path):
         ver = check(path)
         if ver:
             versions.add(ver)
-    return versions
+    if len(versions) == 1:
+        return versions.pop()
+
+
+def _detect_from_module_avail(output):
+    """ Find versions in module avail output """
+    for line in output:
+        if "_VERSION" in line or "_VER" in line:
+            line_split = line.split()
+            return line_split[2]
 
 
 def _detect_version_by_module(module_name):
     """ Attempt to detect a version from a module name """
     modulecmd = create_module_cmd()
-    return
+    output = modulecmd("avail", module_name, output=str, error=str)
+    versions = _detect_from_module_avail(output)
+    return versions
+
+
+def _get_version_from_spec(spec):
+    try:
+        return str(spec.version)
+    except spack.spec.SpecError:
+        return None
 
 
 def _detect_version(external_package, ext_type):
@@ -75,40 +119,6 @@ def _detect_version(external_package, ext_type):
         return _detect_version_using_path(external_package)
     else:
         return _detect_version_by_module(external_package)
-
-
-def _find_external_type(external_package):
-    """ Finds whether the package is a module or a path """
-    p = os.path.realpath(external_package)
-    if os.path.isdir(p):
-        return "paths"
-    else:
-        modulecmd = create_module_cmd()
-        if modulecmd:
-            output = modulecmd("show", external, output=str, error=str)
-            if "ERROR" not in output:
-                return "modules"
-        return "unknown"
-
-
-def _validate_package_installation(path, spec):
-    """ Determines whether the path or module matches what the user specified
-        in the spec """
-
-    def search_package_directory(path, dirname):
-        """ search package directory for files that match package name"""
-        dirpath = join_path(path, dirname)
-        if os.path.exists(dirpath):
-            files = os.listdir(dirpath)
-            for f in files:
-                if spec.name in f:
-                    return True
-
-    valid_checks = []  # Check bin, lib and share for package name
-    for directory in ["bin", "lib", "share", "include"]:
-        valid_checks.append(search_package_directory(path, directory))
-    if not any(valid_checks):
-        tty.die("Incorrect path: %s for package %s" % (path, spec))
 
 
 @key_ordering
@@ -135,6 +145,10 @@ class ExternalPackage(object):
         return self._external_type
 
     @property
+    def external_location(self):
+        return self._external_package
+
+    @property
     def spec(self):
         return self._spec
 
@@ -142,7 +156,7 @@ class ExternalPackage(object):
         return (self._spec, self._external_package, self._external_type)
 
     def __str__(self):
-        return self._spec
+        return str(self._spec)
 
     def __repr__(self):
         return "ExternalPackage(%s, %s)" % (self._spec, self._external_package)
@@ -152,16 +166,16 @@ class ExternalPackage(object):
         """ Finds and verifies a package.
             Returns package objects that can be used to
             append to packages.yaml """
-        # Valid if no errors are raised
+
         external_type = _find_external_type(external_location)
         if external_type == "unknown":
             tty.die("Could not detect correct path or module for %s" % spec)
+        elif external_type == "paths":
+            # Does further checks to make sure that package exists in dir
+            _validate_package_path_installation(external_location, spec)
 
-        # Does further checks to make sure that package exists in dir
-        _validate_package_installation(external_location, spec)
         found_version = _detect_version(external_location, external_type)
         spec_version = _get_version_from_spec(spec)
-        packages = []
 
         if not found_version and not spec_version:
             tty.die("Could not detect version for package %s\n"
@@ -171,24 +185,22 @@ class ExternalPackage(object):
         external_package = ExternalPackage(package_spec,
                                            external_location,
                                            external_type)
-        packages.append(external_package)
-        return packages
+        return external_package
 
     @classmethod
-    def _update_spec(cls, spec, spec_version, version_set):
-        if not version_set:
+    def _update_spec(cls, spec, spec_version, found_version):
+        if not found_version:
             return spec
-        version = version_set.pop()
-        if spec_version == version:  # If versions match no need to update
+        if spec_version == found_version:  # If versions match no need to update
             return spec
-        elif spec_version and version != spec_version:
+        elif spec_version and found_version != spec_version:
                 raise IncorrectPackageVersionError(
                     "detected version %s  does not match version supplied "
-                    " in spec %s" % (version, spec_version))
+                    " in spec %s" % (found_version, spec_version))
         spec_string = str(spec)
         index = len(spec.name)  # index where we want to change version
         new_spec_string = spec_string[:index] + \
-            "@{0}".format(version) + spec_string[index:]
+            "@{0}".format(found_version) + spec_string[index:]
         new_spec = spack.spec.Spec(new_spec_string)
         return new_spec
 
