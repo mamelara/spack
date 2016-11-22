@@ -156,6 +156,7 @@ packages:
       externalmodule@1.0%clang@3.3: external-module
 """
 
+
 class MockPackagesTest(unittest.TestCase):
 
     def initmock(self):
@@ -194,6 +195,10 @@ class MockPackagesTest(unittest.TestCase):
         # restore later.
         self.saved_deps = {}
 
+        # Set up a temporary file path to create fake install paths for
+        # external packages
+        self.external_package_path = tempfile.mkdtemp()
+
     def set_pkg_dep(self, pkg_name, spec, deptypes=spack.alldeps):
         """Alters dependence information for a package.
 
@@ -226,7 +231,19 @@ class MockPackagesTest(unittest.TestCase):
             pkg.dependencies.update(deps)
 
         shutil.rmtree(spack.share_path, ignore_errors=True)
+        shutil.rmtree(self.external_package_path, ignore_errors=True)
         spack.share_path = self.real_share_path
+
+    def make_fake_install_path(self, path, exe_name):
+        """ Helper function to create fake paths. Assigns to attribute
+        self.external_package_path"""
+        fake_root_path = join_path(self.external_package_path, path)
+        exe_path = join_path(fake_root_path, "bin", exe_name)
+        touchp(exe_path)
+        for p in ["lib", "share", "include"]:
+            package_path = join_path(fake_root_path, p)
+            mkdirp(package_path)
+        self.external_package_path = fake_root_path
 
     def setUp(self):
         self.initmock()
