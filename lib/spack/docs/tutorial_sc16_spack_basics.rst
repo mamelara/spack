@@ -16,6 +16,17 @@ small portions of that output (or merely to the fact that it
 succeeded). The provided output is all from a cluster running Red Hat
 Enterprise Linux.
 
+IMPORTANT NOTE: For NERSC, we will be running this on Cori. 
+In order to avoid clogging up the login nodes it is VERY IMPORTANT that 
+you add `-j8` or anything that does not use all 32 cores. Spack can get greedy 
+and when you have a bunch of people installing and using `-j32` 
+default things can get slow.
+
+Also your output will not be too different than what was shown at SC16. The
+only difference will be the architecture type shown. Rather than having
+``linux-redhat-x86_64`` your output will look like this ``cray-CNL-haswell``.
+
+
 .. _basics-tutorial-install:
 
 ----------------
@@ -23,17 +34,21 @@ Installing Spack
 ----------------
 
 Spack works out of the box. Simply clone spack and get going.
+We will be using a forked branch that I have provided that includes some
+configurations that will be useful for compiling on Cori.
 
 .. code-block:: console
 
-  $ git clone https://github.com/LLNL/spack.git
-  Initialized empty Git repository in ~/spack/.git/
+  mamelara:~$ git clone https://github.com/mamelara/spack.git
+  Cloning into 'spack' ...
   remote: Counting objects: 47125, done.
   remote: Compressing objects: 100% (68/68), done.
   remote: Total 47125 (delta 16), reused 2 (delta 2), pack-reused 47047
   Receiving objects: 100% (47125/47125), 12.02 MiB | 2.11 MiB/s, done.
   Resolving deltas: 100% (23044/23044), done.
   $ cd spack
+  mamelara:~$ cd spack
+  mamelara:~$ git checkout nersc_tutorial
 
 Then add Spack to your path.
 
@@ -77,6 +92,9 @@ Installing Packages
 
 Installing a package with Spack is very simple. To install a piece of
 software, simply type ``spack install <package_name>``
+
+As a reminder be sure to add ``-j4`` like so: 
+``spack install -j4 <package_name>''
 
 .. code-block:: console
 
