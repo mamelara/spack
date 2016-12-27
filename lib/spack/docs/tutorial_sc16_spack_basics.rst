@@ -1234,3 +1234,170 @@ If we had done a real install, the output would have been as follows:
   $ spack compiler add ~/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/gcc-6.1.0-j5576zbsot2ydljlthjzhsirsesnogvh/bin
   ==> Added 1 new compiler to ~/.spack/cray/compilers.yaml
       gcc@6.1.0
+
+---------------------
+Linking External Packages
+---------------------
+
+At NERSC, You're likely going to want to link with some of the provided libs
+that Cray includes on their systems. In order to do this, Spack has a package
+configuration file called ``packages.yaml`` that allows for external software to be
+used.
+
+This configuration file is structured like this:
+
+.. code-block:: console
+
+  packages:
+    package1:
+      # settings for package1
+    package2:
+      # settings for package2
+    # ...
+    all:
+      # setting athat apply to all packages.
+
+To give a more concrete example, this is how someone on a 
+Cray will likely set up their packages.yaml file:
+
+.. code-block:: console
+ packages:
+  all:
+    compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
+    providers:
+      mpi: [openmpi, mpich]
+      blas: [openblas]
+      lapack: [openblas]
+      pil: [py-pillow]
+  hdf5:
+      buildable: False
+      modules:
+        hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-haswell: cray-hdf5/1.8.16
+        hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-haswell: cray-hdf5/1.8.16
+        hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+        hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+  pkg-config:
+      buildable: False
+      paths:
+          pkg-config@0.28%gcc@6.2.0 arch=cray-CNL-haswell: /usr/bin/pkg-config
+          pkg-config@0.28%intel@17.0.1.132 arch=cray-CNL-haswell: /usr/bin/pkg-config
+          pkg-config@0.28%gcc@6.2.0 arch=cray-CNL-mic_knl: /usr/bin/pkg-config
+          pkg-config@0.28%intel@17.0.1.132 arch=cray-CNL-mic_knl: /usr/bin/pkg-config
+  netcdf:
+      buildable: False
+      modules:
+          netcdf@4.4.1%gcc@6.2.0 arch=cray-CNL-haswell: cray-netcdf/4.4.1
+          netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-haswell: cray-netcdf/4.4.1
+          netcdf@4.4.1%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1
+          netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1 
+
+So each package (hdf5, pkg-config, netcdf, etc) will include a full spec and
+will either point to a module name or the directory where the package is installed.
+For example, with hdf5, we are telling Spack to use the external hdf5 and to
+load the cray-hdf5 module when building with this dependency.
+
+So if you want to include cray's own MPI, you will want to add mpich to this
+configuration file like using this entry:
+
+.. code-block:: yaml
+  mpich:
+    buildable: False
+    modules:
+        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4
+        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
+        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
+        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
+
+Go ahead and copy and paste the full entry into ~/.spack/packages.yaml.
+
+.. code-block:: yaml
+  packages:
+    all:
+      compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
+      providers:
+        mpi: [openmpi, mpich]
+        blas: [openblas]
+        lapack: [openblas]
+        pil: [py-pillow]
+    hdf5:
+        modules:
+          hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-haswell: cray-hdf5/1.8.16
+          hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-haswell: cray-hdf5/1.8.16
+          hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+          hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+    pkg-config:
+        buildable: False
+        paths:
+            pkg-config@0.28%gcc@6.2.0 arch=cray-CNL-haswell: /usr/bin/pkg-config
+            pkg-config@0.28%intel@17.0.1.132 arch=cray-CNL-haswell: /usr/bin/pkg-config
+            pkg-config@0.28%gcc@6.2.0 arch=cray-CNL-mic_knl: /usr/bin/pkg-config
+            pkg-config@0.28%intel@17.0.1.132 arch=cray-CNL-mic_knl: /usr/bin/pkg-config
+    netcdf:
+        buildable: False
+        modules:
+            netcdf@4.4.1%gcc@6.2.0 arch=cray-CNL-haswell: cray-netcdf/4.4.1
+            netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-haswell: cray-netcdf/4.4.1
+            netcdf@4.4.1%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1
+            netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1
+    mpich:
+        buildable: False
+        modules:
+            mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4 
+            mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
+            mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4
+            mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
+
+As of now manually entering external packages is the only way to add entries to
+the file. Eventually there will be a command that can sanity check and append 
+these entries. There is also work being done to provide Cray platform defaults.
+Look for those soon!
+
+------------
+Preferred Concretization
+------------
+
+Spack can be configured to "prefer" packages/compilers/variants for compiling.
+In the concrete example provided, you can prefer the site defaults such as
+gcc/6.2.0, and intel/17.0.1.132. You can also prefer your flavor of MPI by
+switching mpich to be preferred over openmpi. This will make packages that
+depend on mpi to prefer mpich over openmpi and if you have mpich specified
+as an external package then Spack will use that external MPI over building
+it's own!
+
+.. code-block:: yaml
+
+ packages:
+  all:
+    compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
+    providers:
+      mpi: [mpich, openmpi]
+      blas: [openblas]
+      lapack: [openblas]
+      pil: [py-pillow]
+
+For more information on customizing builds, check out the section on :ref:`build_settings`
+
+-----------
+Choosing Targets
+-----------
+Spack also allows for targets to be chosen in a spec. If you want to build
+a package using the new KNL processors, you can specify this using this command.
+
+.. code-block:: console
+  $: spack install libelf target=mic_knl
+
+  ==> Installing libelf
+  ==> Using cached archive: /global/u2/m/mamelara/spack/var/spack/cache/libelf/libelf-0.8.13.tar.gz
+  ==> Staging archive: /global/u2/m/mamelara/spack/var/spack/stage/libelf-0.8.13-lv2wrtxscaejdtdz5solkftyhdzcdcxu/libelf-0.8.13.tar.gz
+  ==> Created stage in /global/u2/m/mamelara/spack/var/spack/stage/libelf-0.8.13-lv2wrtxscaejdtdz5solkftyhdzcdcxu
+  ==> Ran patch() for libelf
+  ==> Building libelf [AutotoolsPackage]
+  ==> Executing phase : 'autoreconf'
+  ==> Executing phase : 'configure'
+  ==> Executing phase : 'build'
+  ==> Executing phase : 'install'
+  ==> Successfully installed libelf
+    Fetch: 0.01s.  Build: 22.25s.  Total: 22.26s.
+  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-mic_knl/gcc-6.2.0/libelf-0.8.13-lv2wrtxscaejdtdz5solkftyhdzcdcxu
+
+This will then load the craype-mic-knl module into your environment.

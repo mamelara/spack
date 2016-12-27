@@ -81,25 +81,25 @@ to build this package:
 
   $ spack install mpileaks
   ==> Installing mpileaks
-  ==> Using cached archive: /usr/workspace/wsa/legendre/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
-  ==> Staging archive: /usr/workspace/wsa/legendre/spack/var/spack/stage/mpileaks-1.0-hufwhwpq5benv3sslie6ryflk5s6nm35/mpileaks-1.0.tar.gz
-  ==> Created stage in /usr/workspace/wsa/legendre/spack/var/spack/stage/mpileaks-1.0-hufwhwpq5benv3sslie6ryflk5s6nm35
+  ==> Using cached archive: /global/u2/m/mamelara/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
+  ==> Staging archive: /global/u2/m/mamelara/spack/var/spack/stage/mpileaks-1.0-wcku7xyfjprkasjxoo6jff4unxpt6rnj/mpileaks-1.0.tar.gz
+  ==> Created stage in /global/u2/m/mamelara/spack/var/spack/stage/mpileaks-1.0-wcku7xyfjprkasjxoo6jff4unxpt6rnj
   ==> Ran patch() for mpileaks
   ==> Building mpileaks [AutotoolsPackage]
   ==> Executing phase : 'autoreconf'
   ==> Executing phase : 'configure'
   ==> Error: ProcessError: Command exited with status 1:
-      './configure' '--prefix=/usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/mpileaks-1.0-hufwhwpq5benv3sslie6ryflk5s6nm35'
-  /usr/workspace/wsa/legendre/spack/lib/spack/spack/build_systems/autotools.py:150, in configure:
-       145      def configure(self, spec, prefix):
-       146          """Runs configure with the arguments specified in `configure_args`
-       147          and an appropriately set prefix
-       148          """
-       149          options = ['--prefix={0}'.format(prefix)] + self.configure_args()
-    >> 150          inspect.getmodule(self).configure(*options)
+      './configure' '--prefix=/global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpileaks-1.0-wcku7xyfjprkasjxoo6jff4unxpt6rnj'
+  /global/u2/m/mamelara/spack/lib/spack/spack/build_systems/autotools.py:158, in configure:
+      153      def configure(self, spec, prefix):
+      154          """Runs configure with the arguments specified in `configure_args`
+      155          and an appropriately set prefix
+      156          """
+      157          options = ['--prefix={0}'.format(prefix)] + self.configure_args()
+    >> 158          inspect.getmodule(self).configure(*options)
 
   See build log for details:
-    /tmp/legendre/spack-stage/spack-stage-8HVzqu/mpileaks-1.0/spack-build.out
+    /tmp/mamelara/spack-stage/spack-stage-hCHblx/mpileaks-1.0/spack-build.out
 
 This obviously didn't work; we need to fill in the package-specific
 information.  Specifically, Spack didn't try to build any of mpileaks'
