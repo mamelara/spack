@@ -193,27 +193,27 @@ Now when we try to install this package a lot more happens:
 
   $ spack install mpileaks
   ==> Installing mpileaks
-  ==> openmpi is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/openmpi-2.0.1-5ee5j34c2y4kb5c3joygrgahidqnwhnz
-  ==> callpath is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/callpath-1.0.2-zm4pf3gasgxeibyu2y262suktvaazube
-  ==> adept-utils is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/adept-utils-1.0.1-7p7ezxwtajdglj6cmojy2vybjct4j4jz
-  ==> Using cached archive: /usr/workspace/wsa/legendre/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
-  ==> Already staged mpileaks-1.0-eum4hmnlt6ovalwjnciaygfb3beja4gk in /usr/workspace/wsa/legendre/spack/var/spack/stage/mpileaks-1.0-eum4hmnlt6ovalwjnciaygfb3beja4gk
+  ==> mpich is externally installed in /opt/cray/pe/mpt/7.4.4/gni/mpich-gnu/5.1
+  ==> callpath is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/callpath-1.0.3-4zycu22zqnzlwv4bvk5s7tcnxtpfjl3q
+  ==> adept-utils is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/adept-utils-1.0.1-2izudh5mq3jtv5ozpltykoh2gmyjccjw
+  ==> Using cached archive: /global/u2/m/mamelara/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
+  ==> Already staged mpileaks-1.0-i3kbwegaanuukusd576lf3k5e6o2x2st in /global/u2/m/mamelara/spack/var/spack/stage/mpileaks-1.0-i3kbwegaanuukusd576lf3k5e6o2x2st
   ==> Already patched mpileaks
   ==> Building mpileaks [AutotoolsPackage]
   ==> Executing phase : 'autoreconf'
   ==> Executing phase : 'configure'
   ==> Error: ProcessError: Command exited with status 1:
-      './configure' '--prefix=/usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/mpileaks-1.0-eum4hmnlt6ovalwjnciaygfb3beja4gk'
-  /usr/workspace/wsa/legendre/spack/lib/spack/spack/build_systems/autotools.py:150, in configure:
-       145      def configure(self, spec, prefix):
-       146          """Runs configure with the arguments specified in `configure_args`
-       147          and an appropriately set prefix
-       148          """
-       149          options = ['--prefix={0}'.format(prefix)] + self.configure_args()
-    >> 150          inspect.getmodule(self).configure(*options)
+      './configure' '--prefix=/global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpileaks-1.0-i3kbwegaanuukusd576lf3k5e6o2x2st'
+  /global/u2/m/mamelara/spack/lib/spack/spack/build_systems/autotools.py:158, in configure:
+      153      def configure(self, spec, prefix):
+      154          """Runs configure with the arguments specified in `configure_args`
+      155          and an appropriately set prefix
+      156          """
+      157          options = ['--prefix={0}'.format(prefix)] + self.configure_args()
+    >> 158          inspect.getmodule(self).configure(*options)
 
   See build log for details:
-    /tmp/legendre/spack-stage/spack-stage-7V5yyk/mpileaks-1.0/spack-build.out
+    /tmp/mamelara/spack-stage/spack-stage-AZRq__/mpileaks-1.0/spack-build.out
 
 Note that this command may take a while to run and produce more output if
 you don't have an MPI already installed or configured in Spack.
@@ -276,8 +276,14 @@ We can also enter the build area and try to manually run the build:
 
 .. code-block:: console
 
+<<<<<<< HEAD
   $ spack env mpileaks bash
   $ spack cd mpileaks
+=======
+  $ spack cd mpileaks
+  $ spack env mpileaks sh  # or tcsh 
+
+>>>>>>> Add output to match mine
 
 The ``spack env`` command spawned a new shell that contains the same
 environment that Spack used to build the mpileaks package (you can
@@ -295,23 +301,27 @@ From here we can manually re-run the build:
   checking for a thread-safe mkdir -p... /usr/bin/mkdir -p
   checking for gawk... gawk
   checking whether make sets $(MAKE)... yes
-  checking for gcc... /usr/workspace/wsa/legendre/spack/lib/spack/env/gcc/gcc
+  checking for gcc... /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc
   checking for C compiler default output file name... a.out
   checking whether the C compiler works... yes
   checking whether we are cross compiling... no
   checking for suffix of executables...
   checking for suffix of object files... o
   checking whether we are using the GNU C compiler... yes
-  checking whether /usr/workspace/wsa/legendre/spack/lib/spack/env/gcc/gcc accepts -g... yes
-  checking for /usr/workspace/wsa/legendre/spack/lib/spack/env/gcc/gcc option to accept ISO C89... none needed
+  checking whether /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc accepts -g... yes
+  checking for /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc option to accept ISO C89... none needed
   checking for style of include used by make... GNU
-  checking dependency style of /usr/workspace/wsa/legendre/spack/lib/spack/env/gcc/gcc... gcc3
-  checking whether /usr/workspace/wsa/legendre/spack/lib/spack/env/gcc/gcc and cc understand -c and -o together... yes
+  checking dependency style of /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc... gcc3
+  checking whether /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc and cc understand -c and -o together... yes
   checking whether we are using the GNU C++ compiler... yes
-  checking whether /usr/workspace/wsa/legendre/spack/lib/spack/env/gcc/g++ accepts -g... yes
-  checking dependency style of /usr/workspace/wsa/legendre/spack/lib/spack/env/gcc/g++... gcc3
-  checking for /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/openmpi-2.0.1-5ee5j34c2y4kb5c3joygrgahidqnwhnz/bin/mpicc... /usr/workspace/wsa  /legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/openmpi-2.0.1-5ee5j34c2y4kb5c3joygrgahidqnwhnz/bin/mpicc
-  Checking whether /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/openmpi-2.0.1-5ee5j34c2y4kb5c3joygrgahidqnwhnz/bin/mpicc responds to '-showme:compile'... yes
+  checking whether /global/u2/m/mamelara/spack/lib/spack/env/gcc/g++ accepts -g... yes
+  checking dependency style of /global/u2/m/mamelara/spack/lib/spack/env/gcc/g++... gcc3
+  checking for /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc... /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc
+  Checking whether /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc responds to '-showme:compile'... no
+  Checking whether /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc responds to '-showme'... no
+  Checking whether /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc responds to '-compile-info'... no
+  Checking whether /global/u2/m/mamelara/spack/lib/spack/env/gcc/gcc responds to '-show'... no
+  ./configure: line 4809: Echo: command not found
   configure: error: unable to locate adept-utils installation
 
 We're seeing the same error, but now we're in a shell where we can run
@@ -341,20 +351,21 @@ This is all we need for working mpileaks!  If we install now we'll see:
   $ spack install mpileaks
   spack install mpileaks
   ==> Installing mpileaks
-  ==> openmpi is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/openmpi-2.0.1-5ee5j34c2y4kb5c3joygrgahidqnwhnz
-  ==> callpath is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/callpath-1.0.2-zm4pf3gasgxeibyu2y262suktvaazube
-  ==> adept-utils is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/adept-utils-1.0.1-7p7ezxwtajdglj6cmojy2vybjct4j4jz
-  ==> Using cached archive: /usr/workspace/wsa/legendre/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
-  ==> Already staged mpileaks-1.0-eum4hmnlt6ovalwjnciaygfb3beja4gk in /usr/workspace/wsa/legendre/spack/var/spack/stage/mpileaks-1.0-eum4hmnlt6ovalwjnciaygfb3beja4gk
-  ==> Already patched mpileaks
+  ==> mpich is externally installed in /opt/cray/pe/mpt/7.4.4/gni/mpich-gnu/5.1
+  ==> callpath is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/callpath-1.0.3-4zycu22zqnzlwv4bvk5s7tcnxtpfjl3q
+  ==> adept-utils is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/adept-utils-1.0.1-2izudh5mq3jtv5ozpltykoh2gmyjccjw
+  ==> Using cached archive: /global/u2/m/mamelara/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
+  ==> Staging archive: /global/u2/m/mamelara/spack/var/spack/stage/mpileaks-1.0-eie54hwppkqlta7p2a2ub2no23gskdwt/mpileaks-1.0.tar.gz
+  ==> Created stage in /global/u2/m/mamelara/spack/var/spack/stage/mpileaks-1.0-eie54hwppkqlta7p2a2ub2no23gskdwt
+  ==> Ran patch() for mpileaks
   ==> Building mpileaks [AutotoolsPackage]
   ==> Executing phase : 'autoreconf'
   ==> Executing phase : 'configure'
   ==> Executing phase : 'build'
   ==> Executing phase : 'install'
   ==> Successfully installed mpileaks
-    Fetch: 0.00s.  Build: 14.08s.  Total: 14.08s.
-  [+] /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/mpileaks-1.0-eum4hmnlt6ovalwjnciaygfb3beja4gk
+    Fetch: 0.01s.  Build: 41.57s.  Total: 41.58s.
+  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpileaks-1.0-eie54hwppkqlta7p2a2ub2no23gskdwt
 
 We took a few shortcuts for this package that are worth highlighting.
 Spack automatically detected that mpileaks was an Autotools-based package
@@ -395,17 +406,17 @@ configure line (output truncated for length):
 
   $ spack install --verbose mpileaks stackstart=4
   ==> Installing mpileaks
-  ==> openmpi is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/openmpi-2.0.1-5ee5j34c2y4kb5c3joygrgahidqnwhnz
-  ==> callpath is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/callpath-1.0.2-zm4pf3gasgxeibyu2y262suktvaazube
-  ==> adept-utils is already installed in /usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/adept-utils-1.0.1-7p7ezxwtajdglj6cmojy2vybjct4j4jz
-  ==> Using cached archive: /usr/workspace/wsa/legendre/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
-  ==> Staging archive: /usr/workspace/wsa/legendre/spack/var/spack/stage/mpileaks-1.0-otqo2opkhan5ksujt6tpmdftydrieig7/mpileaks-1.0.tar.gz
-  ==> Created stage in /usr/workspace/wsa/legendre/spack/var/spack/stage/mpileaks-1.0-otqo2opkhan5ksujt6tpmdftydrieig7
+  ==> mpich is externally installed in /opt/cray/pe/mpt/7.4.4/gni/mpich-gnu/5.1
+  ==> callpath is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/callpath-1.0.3-4zycu22zqnzlwv4bvk5s7tcnxtpfjl3q
+  ==> adept-utils is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/adept-utils-1.0.1-2izudh5mq3jtv5ozpltykoh2gmyjccjw
+  ==> Using cached archive: /global/u2/m/mamelara/spack/var/spack/cache/mpileaks/mpileaks-1.0.tar.gz
+  ==> Staging archive: /global/u2/m/mamelara/spack/var/spack/stage/mpileaks-1.0-akvnsmnth5jfe2hi5fzw4phcmqrqk4is/mpileaks-1.0.tar.gz
+  ==> Created stage in /global/u2/m/mamelara/spack/var/spack/stage/mpileaks-1.0-akvnsmnth5jfe2hi5fzw4phcmqrqk4is
   ==> Ran patch() for mpileaks
   ==> Building mpileaks [AutotoolsPackage]
   ==> Executing phase : 'autoreconf'
   ==> Executing phase : 'configure'
-  ==> './configure' '--prefix=/usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/mpileaks-1.0-otqo2opkhan5ksujt6tpmdftydrieig7' '--with-adept-utils=/usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/adept-utils-1.0.1-7p7ezxwtajdglj6cmojy2vybjct4j4jz' '--with-callpath=/usr/workspace/wsa/legendre/spack/opt/spack/linux-rhel7-x86_64/gcc-4.9.3/callpath-1.0.2-zm4pf3gasgxeibyu2y262suktvaazube' '--with-stack-start-c=4' '--with-stack-start-fortran=4'
+  ==> './configure' '--prefix=/global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpileaks-1.0-akvnsmnth5jfe2hi5fzw4phcmqrqk4is' '--with-adept-utils=/global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/adept-utils-1.0.1-2izudh5mq3jtv5ozpltykoh2gmyjccjw' '--with-callpath=/global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/callpath-1.0.3-4zycu22zqnzlwv4bvk5s7tcnxtpfjl3q' '--with-stack-start-c=4' '--with-stack-start-fortran=4'
 
 ---------------
 The Spec Object
