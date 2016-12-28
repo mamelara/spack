@@ -1246,7 +1246,7 @@ used.
 
 This configuration file is structured like this:
 
-.. code-block:: console
+.. code-block:: yaml
 
   packages:
     package1:
@@ -1260,7 +1260,8 @@ This configuration file is structured like this:
 To give a more concrete example, this is how someone on a 
 Cray will likely set up their packages.yaml file:
 
-.. code-block:: console
+.. code-block:: yaml
+
  packages:
   all:
     compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
@@ -1384,6 +1385,7 @@ Spack also allows for targets to be chosen in a spec. If you want to build
 a package using the new KNL processors, you can specify this using this command.
 
 .. code-block:: console
+
   $: spack install libelf target=mic_knl
 
   ==> Installing libelf
