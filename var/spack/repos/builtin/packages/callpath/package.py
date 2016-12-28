@@ -30,8 +30,9 @@ class Callpath(Package):
        distributed-memory performance tools."""
 
     homepage = "https://github.com/llnl/callpath"
-    url      = "https://github.com/llnl/callpath/archive/v1.0.1.tar.gz"
-
+    url      = "https://github.com/llnl/callpath/archive/v1.0.3.tar.gz"
+ 
+    version('1.0.3', 'c89089b3f1c1ba47b09b8508a574294a')
     version('1.0.2', 'b1994d5ee7c7db9d27586fc2dcf8f373')
     version('1.0.1', '0047983d2a52c5c335f8ba7f5bab2325')
 
