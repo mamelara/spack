@@ -38,11 +38,13 @@ correspond to sections in the slides above.
 
   1. :ref:`basics-tutorial`
   2. :ref:`packaging-tutorial`
-  3. :ref:`modules-tutorial`
+  3. :ref:`feature-overview`
+  4. :ref:`modules-tutorial`
 
 Full contents:
 
 .. toctree::
    tutorial_sc16_spack_basics
    tutorial_sc16_packaging
+   tutorial_sc16_features
    tutorial_sc16_modules
