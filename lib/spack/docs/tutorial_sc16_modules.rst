@@ -474,6 +474,12 @@ This time we will be more selective and regenerate only the ``gcc`` and
   conflict   openmpi
   -------------------------------------------------------------------
 
+.. note::
+  I wanted to show case autoloading of dependencies but to have many people 
+  downloading scipy will take a LONG time. Please feel free to try this in
+  your spare time, the build for scipy took long even for -j32. For now, just
+  reading the material and getting the idea will suffice.
+
 ---------------------
 Autoload dependencies
 ---------------------
