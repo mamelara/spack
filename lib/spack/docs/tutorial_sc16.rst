@@ -38,8 +38,8 @@ correspond to sections in the slides above.
 
   1. :ref:`basics-tutorial`
   2. :ref:`packaging-tutorial`
-  3. :ref:`feature-overview`
-  4. :ref:`modules-tutorial`
+  3. :ref:`modules-tutorial`
+  4. :ref:`feature-overview`
 
 Full contents:
 

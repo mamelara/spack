@@ -33,98 +33,46 @@ Prerequisites
 
 Before proceeding further ensure:
 
-- you have LMod or Environment Modules available
 - have :ref:`shell support <shell-support>` activated in Spack
 
-If you need to install Lmod or Environment module you can refer
-to the documentation :ref:`here <InstallEnvironmentModules>`.
-
-
-^^^^^^^^^^^^^^^^^^
-Add a new compiler
-^^^^^^^^^^^^^^^^^^
-
-Spack automatically scans the environment to search for available
-compilers on first use. On a Ubuntu 14.04 a fresh clone will show
-something like this:
+^^^^^^^^^^^^^^^^^^^^^^
+Fake install gcc-6.2.0
+^^^^^^^^^^^^^^^^^^^^^^
+Because installs will take long and we are using the shared login nodes, we
+will fake install gcc-6.2.0:
 
 .. code-block:: console
+  $ spack install --fake gcc@6.2.0%gcc@4.9.3
 
-  $ uname -a
-  Linux nuvolari 4.4.0-45-generic #66~14.04.1-Ubuntu SMP Wed Oct 19 15:05:38 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+If your default PrgEnv is intel, you might get some intel compiler output
+``icpc: warning #10315: specifying -lm before files may supersede the Intel(R) math library and affect performance``
 
-  $ spack compilers
-  ==> Available compilers
-  -- gcc ----------------------------------------------------------
-  gcc@4.8
-
-For the purpose of building a limited set of packages with some features
-that will help showcasing the capabilities of
-module customization the first thing we need is to build a new compiler:
-
-.. code-block:: console
-
-  $ spack install gcc@6.2.0
-  # ...
-  # Wait a long time
-  # ...
-
-Then we can use shell support for modules to add it to the list of known compilers:
-
-.. code-block:: console
-
-  # The name of the generated module may vary
-  $ module load gcc-6.2.0-gcc-4.8-twd5nqg
-
-  $ spack compiler add
-  ==> Added 1 new compiler to ~/.spack/linux/compilers.yaml
-      gcc@6.2.0
-
-  $ spack compilers
-  ==> Available compilers
-  -- gcc ----------------------------------------------------------
-  gcc@6.2.0  gcc@4.8
-
-Note that the final 7 digits hash at the end of the generated module may vary depending
-on architecture or package version.
+Since we are not really doing a real install this can be ignored.
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Build software that will be used in the tutorial
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Next you should install a few modules that will be used in the tutorial:
+Next you should install a few modules that will be used in the tutorial.
+Rather than wait for all these packages to build, let's fake install them:
 
 .. code-block:: console
 
-  $ spack install netlib-scalapack ^openmpi ^openblas
-  # ...
+  $ spack install --fake netlib-scalapack ^mpich ^openblas
 
-The packages you need to install are:
+Fake install these packages as well
 
-- ``netlib-scalapack ^openmpi ^openblas``
-- ``netlib-scalapack ^mpich ^openblas``
-- ``netlib-scalapack ^openmpi ^netlib-lapack``
-- ``netlib-scalapack ^mpich ^netlib-lapack``
-- ``py-scipy ^openblas``
+  - ``netlib-scalapack ^openmpi ^openblas``
+  - ``netlib-scalapack ^openmpi ^netlib-lapack``
+  - ``netlib-scalapack ^mpich ^netlib-lapack``
 
 In the end your environment should look something like:
 
 .. code-block:: console
 
   $ module avail
+  ADD OUTPUT
 
-  ------------------------------------------------------------------------ ~/spack/share/spack/modules/linux-Ubuntu14-x86_64 ------------------------------------------------------------------------
-     binutils-2.27-gcc-4.8-dz3xevw         libpciaccess-0.13.4-gcc-6.2.0-eo2siet      lzo-2.09-gcc-6.2.0-jcngz72                  netlib-scalapack-2.0.2-gcc-6.2.0-wnimqhw    python-2.7.12-gcc-6.2.0-qu7rc5p
-     bzip2-1.0.6-gcc-6.2.0-csoc2mq         libsigsegv-2.10-gcc-4.8-avb6azw            m4-1.4.17-gcc-4.8-iggewke                   netlib-scalapack-2.0.2-gcc-6.2.0-wojunhq    sqlite-3.8.5-gcc-6.2.0-td3zfe7
-     cmake-3.5.2-gcc-6.2.0-6poypqg         libsigsegv-2.10-gcc-6.2.0-g3qpmbi          m4-1.4.17-gcc-6.2.0-lhgqa6s                 nettle-3.2-gcc-6.2.0-djdthlh                tcl-8.6.5-gcc-4.8-atddxu7
-     curl-7.50.3-gcc-6.2.0-2ffacqm         libtool-2.4.6-gcc-6.2.0-kiepac6            mpc-1.0.3-gcc-4.8-lylv7lk                   openblas-0.2.19-gcc-6.2.0-js33umc           util-macros-1.19.0-gcc-6.2.0-uoukuqk
-     expat-2.2.0-gcc-6.2.0-bxqnjar         libxml2-2.9.4-gcc-6.2.0-3k4ykbe            mpfr-3.1.4-gcc-4.8-bldfx3w                  openmpi-2.0.1-gcc-6.2.0-s3qbtby             xz-5.2.2-gcc-6.2.0-t5lk6in
-     gcc-6.2.0-gcc-4.8-twd5nqg             lmod-6.4.5-gcc-4.8-7v7bh7b                 mpich-3.2-gcc-6.2.0-5n5xoep                 openssl-1.0.2j-gcc-6.2.0-hibnfda            zlib-1.2.8-gcc-4.8-bds4ies
-     gmp-6.1.1-gcc-4.8-uq52e2n             lua-5.3.2-gcc-4.8-xozf2hx                  ncurses-6.0-gcc-4.8-u62fit4                 pkg-config-0.29.1-gcc-6.2.0-rslsgcs         zlib-1.2.8-gcc-6.2.0-asydrba
-     gmp-6.1.1-gcc-6.2.0-3cfh3hi           lua-luafilesystem-1_6_3-gcc-4.8-sbzejlz    ncurses-6.0-gcc-6.2.0-7tb426s               py-nose-1.3.7-gcc-6.2.0-4gl5c42
-     hwloc-1.11.4-gcc-6.2.0-3ostwel        lua-luaposix-33.4.0-gcc-4.8-xf7y2p5        netlib-lapack-3.6.1-gcc-6.2.0-mirer2l       py-numpy-1.11.1-gcc-6.2.0-i3rpk4e
-     isl-0.14-gcc-4.8-cq73t5m              lz4-131-gcc-6.2.0-cagoem4                  netlib-scalapack-2.0.2-gcc-6.2.0-6bqlxqy    py-scipy-0.18.1-gcc-6.2.0-e6uljfi
-     libarchive-3.2.1-gcc-6.2.0-2b54aos    lzma-4.32.7-gcc-6.2.0-sfmeynw              netlib-scalapack-2.0.2-gcc-6.2.0-hpqb3dp    py-setuptools-25.2.0-gcc-6.2.0-hkqauaa
 
 ------------------------------------------------
 Filter unwanted modifications to the environment
@@ -136,22 +84,18 @@ follow the default rules for module generation, which are given
 look at the ``gcc`` module you'll see something like:
 
 .. code-block:: console
+  $ module show gcc-6.2.0-gcc-4.9.3-3wm2efx
+  -------------------------------------------------------------------
+  /global/homes/m/mamelara/spack/share/spack/modules/cray-CNL-haswell/gcc-6.2.0-gcc-4.9.3-3wm2efx:
 
-  $ module show gcc-6.2.0-gcc-4.8-twd5nqg
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     ~/spack/share/spack/modules/linux-Ubuntu14-x86_64/gcc-6.2.0-gcc-4.8-twd5nqg:
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  whatis("gcc @6.2.0 ")
-  prepend_path("PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/bin")
-  prepend_path("CMAKE_PREFIX_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/")
-  prepend_path("MANPATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/share/man")
-  prepend_path("PKG_CONFIG_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64/pkgconfig")
-  prepend_path("LIBRARY_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64")
-  prepend_path("LD_LIBRARY_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64")
-  prepend_path("CPATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/include")
-  help([[The GNU Compiler Collection includes front ends for C, C++, Objective-C,
-  Fortran, and Java.
-  ]])
+  module-whatis  gcc @6.2.0
+  prepend-path   PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/bin
+  prepend-path   CMAKE_PREFIX_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/
+  prepend-path   LIBRARY_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/lib
+  prepend-path   LD_LIBRARY_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/lib
+  prepend-path   CPATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/include
+  prepend-path   MANPATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/man
+  -------------------------------------------------------------------
 
 As expected, a few environment variables representing paths will be modified
 by the modules according to the default prefix inspection rules.
@@ -174,36 +118,23 @@ Next you should regenerate all the module files:
 .. code-block:: console
 
   $ spack module refresh --module-type tcl
-  ==> You are about to regenerate tcl module files for:
-
-  -- linux-Ubuntu14-x86_64 / gcc@4.8 ------------------------------
-  dz3xevw binutils@2.27  uq52e2n gmp@6.1.1  avb6azw libsigsegv@2.10  xozf2hx lua@5.3.2                xf7y2p5 lua-luaposix@33.4.0  lylv7lk mpc@1.0.3   u62fit4 ncurses@6.0  bds4ies zlib@1.2.8
-  twd5nqg gcc@6.2.0      cq73t5m isl@0.14   7v7bh7b lmod@6.4.5       sbzejlz lua-luafilesystem@1_6_3  iggewke m4@1.4.17            bldfx3w mpfr@3.1.4  atddxu7 tcl@8.6.5
-
-  ...
-
-  ==> Do you want to proceed ? [y/n]
-  y
-  ==> Regenerating tcl module files
+  ADD OUTPUT
 
 If you take a look now at the module for ``gcc`` you'll see that the unwanted
 paths have disappeared:
 
 .. code-block:: console
 
-  $ module show gcc-6.2.0-gcc-4.8-twd5nqg
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     ~/spack/share/spack/modules/linux-Ubuntu14-x86_64/gcc-6.2.0-gcc-4.8-twd5nqg:
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  whatis("gcc @6.2.0 ")
-  prepend_path("PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/bin")
-  prepend_path("CMAKE_PREFIX_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/")
-  prepend_path("MANPATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/share/man")
-  prepend_path("PKG_CONFIG_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64/pkgconfig")
-  prepend_path("LD_LIBRARY_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64")
-  help([[The GNU Compiler Collection includes front ends for C, C++, Objective-C,
-  Fortran, and Java.
-  ]])
+  $ module show gcc-6.2.0-gcc-4.9.3-3wm2efx
+  -------------------------------------------------------------------
+  /global/homes/m/mamelara/spack/share/spack/modules/cray-CNL-haswell/gcc-6.2.0-gcc-4.9.3-3wm2efx:
+
+  module-whatis  gcc @6.2.0
+  prepend-path   PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/bin
+  prepend-path   CMAKE_PREFIX_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/
+  prepend-path   LD_LIBRARY_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/lib
+  prepend-path   MANPATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/man
+  -------------------------------------------------------------------
 
 ----------------------------------------------
 Prevent some module files from being generated
@@ -212,7 +143,7 @@ Prevent some module files from being generated
 Another common request at many sites is to avoid exposing software that
 is only needed as an intermediate step when building a newer stack.
 Let's try to prevent the generation of
-module files for anything that is compiled with ``gcc@4.8`` (the OS provided compiler).
+module files for anything that is compiled with ``gcc@4.9.3``.
 
 To do this you should add a ``blacklist`` keyword to the configuration file:
 
@@ -222,7 +153,7 @@ To do this you should add a ``blacklist`` keyword to the configuration file:
   modules:
     tcl:
       blacklist:
-        -  '%gcc@4.8'
+        -  '%gcc@4.9.3'
       all:
         filter:
           environment_blacklist: ['CPATH', 'LIBRARY_PATH']
@@ -232,42 +163,16 @@ and regenerate the module files:
 .. code-block:: console
 
   $ spack module refresh --module-type tcl --delete-tree
-  ==> You are about to regenerate tcl module files for:
-
-  -- linux-Ubuntu14-x86_64 / gcc@4.8 ------------------------------
-  dz3xevw binutils@2.27  uq52e2n gmp@6.1.1  avb6azw libsigsegv@2.10  xozf2hx lua@5.3.2                xf7y2p5 lua-luaposix@33.4.0  lylv7lk mpc@1.0.3   u62fit4 ncurses@6.0  bds4ies zlib@1.2.8
-  twd5nqg gcc@6.2.0      cq73t5m isl@0.14   7v7bh7b lmod@6.4.5       sbzejlz lua-luafilesystem@1_6_3  iggewke m4@1.4.17            bldfx3w mpfr@3.1.4  atddxu7 tcl@8.6.5
-
-  -- linux-Ubuntu14-x86_64 / gcc@6.2.0 ----------------------------
-  csoc2mq bzip2@1.0.6   2b54aos libarchive@3.2.1     sfmeynw lzma@4.32.7          wnimqhw netlib-scalapack@2.0.2  s3qbtby openmpi@2.0.1      hkqauaa py-setuptools@25.2.0
-  6poypqg cmake@3.5.2   eo2siet libpciaccess@0.13.4  jcngz72 lzo@2.09             6bqlxqy netlib-scalapack@2.0.2  hibnfda openssl@1.0.2j     qu7rc5p python@2.7.12
-  2ffacqm curl@7.50.3   g3qpmbi libsigsegv@2.10      lhgqa6s m4@1.4.17            wojunhq netlib-scalapack@2.0.2  rslsgcs pkg-config@0.29.1  td3zfe7 sqlite@3.8.5
-  bxqnjar expat@2.2.0   kiepac6 libtool@2.4.6        5n5xoep mpich@3.2            hpqb3dp netlib-scalapack@2.0.2  4gl5c42 py-nose@1.3.7      uoukuqk util-macros@1.19.0
-  3cfh3hi gmp@6.1.1     3k4ykbe libxml2@2.9.4        7tb426s ncurses@6.0          djdthlh nettle@3.2              i3rpk4e py-numpy@1.11.1    t5lk6in xz@5.2.2
-  3ostwel hwloc@1.11.4  cagoem4 lz4@131              mirer2l netlib-lapack@3.6.1  js33umc openblas@0.2.19         e6uljfi py-scipy@0.18.1    asydrba zlib@1.2.8
-
-  ==> Do you want to proceed ? [y/n]
-  y
-
-  $ module avail
-
-  ------------------------------------------------------------------------ ~/spack/share/spack/modules/linux-Ubuntu14-x86_64 ------------------------------------------------------------------------
-     bzip2-1.0.6-gcc-6.2.0-csoc2mq            libsigsegv-2.10-gcc-6.2.0-g3qpmbi    ncurses-6.0-gcc-6.2.0-7tb426s               openmpi-2.0.1-gcc-6.2.0-s3qbtby           sqlite-3.8.5-gcc-6.2.0-td3zfe7
-     cmake-3.5.2-gcc-6.2.0-6poypqg            libtool-2.4.6-gcc-6.2.0-kiepac6      netlib-lapack-3.6.1-gcc-6.2.0-mirer2l       openssl-1.0.2j-gcc-6.2.0-hibnfda          util-macros-1.19.0-gcc-6.2.0-uoukuqk
-     curl-7.50.3-gcc-6.2.0-2ffacqm            libxml2-2.9.4-gcc-6.2.0-3k4ykbe      netlib-scalapack-2.0.2-gcc-6.2.0-6bqlxqy    pkg-config-0.29.1-gcc-6.2.0-rslsgcs       xz-5.2.2-gcc-6.2.0-t5lk6in
-     expat-2.2.0-gcc-6.2.0-bxqnjar            lz4-131-gcc-6.2.0-cagoem4            netlib-scalapack-2.0.2-gcc-6.2.0-hpqb3dp    py-nose-1.3.7-gcc-6.2.0-4gl5c42           zlib-1.2.8-gcc-6.2.0-asydrba
-     gmp-6.1.1-gcc-6.2.0-3cfh3hi              lzma-4.32.7-gcc-6.2.0-sfmeynw        netlib-scalapack-2.0.2-gcc-6.2.0-wnimqhw    py-numpy-1.11.1-gcc-6.2.0-i3rpk4e
-     hwloc-1.11.4-gcc-6.2.0-3ostwel           lzo-2.09-gcc-6.2.0-jcngz72           netlib-scalapack-2.0.2-gcc-6.2.0-wojunhq    py-scipy-0.18.1-gcc-6.2.0-e6uljfi
-     libarchive-3.2.1-gcc-6.2.0-2b54aos       m4-1.4.17-gcc-6.2.0-lhgqa6s          nettle-3.2-gcc-6.2.0-djdthlh                py-setuptools-25.2.0-gcc-6.2.0-hkqauaa
-     libpciaccess-0.13.4-gcc-6.2.0-eo2siet    mpich-3.2-gcc-6.2.0-5n5xoep          openblas-0.2.19-gcc-6.2.0-js33umc           python-2.7.12-gcc-6.2.0-qu7rc5p
+    ADD OUTPUT
 
 This time it is convenient to pass the option ``--delete-tree`` to the command that
 regenerates the module files to instruct it to delete the existing tree and regenerate
 a new one instead of overwriting the files in the existing directory.
 
-If you pay careful attention you'll see though that we went too far in blacklisting modules:
-the module for ``gcc@6.2.0`` disappeared as it was bootstrapped with ``gcc@4.8``. To specify
-exceptions to the blacklist rules you can use ``whitelist``:
+If you pay careful attention you'll see though that we went too far in 
+blacklisting modules: the module for ``gcc@6.2.0`` disappeared as it was 
+bootstrapped with ``gcc@4.9.3``. To specify exceptions to the blacklist rules 
+you can use whitelist:
 
 .. code-block:: yaml
   :emphasize-lines: 3,4
@@ -275,27 +180,26 @@ exceptions to the blacklist rules you can use ``whitelist``:
   modules:
     tcl:
       whitelist:
-        -  gcc
+        - gcc
       blacklist:
-        -  '%gcc@4.8'
-      all:
-        filter:
-          environment_blacklist: ['CPATH', 'LIBRARY_PATH']
+        - '%gcc@4.9.3'
+    all:
+      filter:
+         environment_blacklist = ['CPATH', 'LIBRARY_PATH']
 
-``whitelist`` rules always have precedence over ``blacklist`` rules. If you regenerate the modules again:
+``whitelist`` rules always have precedence over ``blacklist`` rules. If you
+generate the modules again:
 
 .. code-block:: console
-
   $ spack module refresh --module-type tcl -y
 
-you'll see that now the module for ``gcc@6.2.0`` has reappeared:
+You'll see that now the module for ``gcc@6.2.0`` has reappeared.
 
 .. code-block:: console
+  $ module avail gcc-6.2.0-gcc-4.9.3-3wm2efx
+  ---------------- /global/homes/m/mamelara/spack/share/spack/modules/cray-CNL-haswell ----------------
+  gcc-6.2.0-gcc-4.9.3-3wm2efx
 
-  $ module avail gcc-6.2.0-gcc-4.8-twd5nqg
-
-  ------------------------------------------------------------------------ ~/spack/share/spack/modules/linux-Ubuntu14-x86_64 ------------------------------------------------------------------------
-     gcc-6.2.0-gcc-4.8-twd5nqg
 
 -------------------------
 Change module file naming
@@ -314,37 +218,37 @@ use the ``hash_length`` keyword in the configuration file:
   modules:
     tcl:
       hash_length: 0
-      whitelist:
-        -  gcc
       blacklist:
-        -  '%gcc@4.8'
+        -  '%gcc@4.9.3'
       all:
         filter:
           environment_blacklist: ['CPATH', 'LIBRARY_PATH']
 
-If you try to regenerate the module files now you will get an error:
+Try to regenerate the module files now:
 
 .. code-block:: console
 
   $ spack module refresh --module-type tcl --delete-tree -y
+  ==> Regenerating tcl module files
   ==> Error: Name clashes detected in module files:
 
-  file : ~/spack/share/spack/modules/linux-Ubuntu14-x86_64/netlib-scalapack-2.0.2-gcc-6.2.0
-  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=linux-Ubuntu14-x86_64
-  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=linux-Ubuntu14-x86_64
-  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=linux-Ubuntu14-x86_64
-  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=linux-Ubuntu14-x86_64
+  file : /global/u2/m/mamelara/spack/share/spack/modules/cray-CNL-haswell/netlib-scalapack-2.0.2-gcc-6.2.0
+  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=cray-CNL-haswell
+  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=cray-CNL-haswell
+  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=cray-CNL-haswell
+  spec : netlib-scalapack@2.0.2%gcc@6.2.0~fpic+shared arch=cray-CNL-haswell
 
   ==> Error: Operation aborted
 
 .. note::
   We try to check for errors upfront!
+   Name clashes will happen if you have multiple packages of the same name.
    In Spack we check for errors upfront whenever possible, so don't worry about your module files:
    as a name clash was detected nothing has been changed on disk.
 
-The problem here is that without
-the hashes the four different flavors of ``netlib-scalapack`` map to the same module file
-name. We have the possibility to add suffixes to differentiate them:
+The problem here is that without the hashes the four different flavors of 
+``netlib-scalapack`` map to the same module file name. 
+We have the possibility to add suffixes to differentiate them:
 
 .. code-block:: yaml
  :emphasize-lines: 9-11,14-17
@@ -355,7 +259,7 @@ name. We have the possibility to add suffixes to differentiate them:
       whitelist:
         -  gcc
       blacklist:
-        -  '%gcc@4.8'
+        -  '%gcc@4.9.3'
       all:
         suffixes:
           '^openblas': openblas
@@ -376,16 +280,7 @@ Regenerating module files now we obtain:
   $ spack module refresh --module-type tcl --delete-tree -y
   ==> Regenerating tcl module files
   $ module avail
-
-  ------------------------------------------------------------------------ ~/spack/share/spack/modules/linux-Ubuntu14-x86_64 ------------------------------------------------------------------------
-     bzip2-1.0.6-gcc-6.2.0         libpciaccess-0.13.4-gcc-6.2.0    mpich-3.2-gcc-6.2.0                                  openblas-0.2.19-gcc-6.2.0             python-2.7.12-gcc-6.2.0
-     cmake-3.5.2-gcc-6.2.0         libsigsegv-2.10-gcc-6.2.0        ncurses-6.0-gcc-6.2.0                                openmpi-2.0.1-gcc-6.2.0               sqlite-3.8.5-gcc-6.2.0
-     curl-7.50.3-gcc-6.2.0         libtool-2.4.6-gcc-6.2.0          netlib-lapack-3.6.1-gcc-6.2.0                        openssl-1.0.2j-gcc-6.2.0              util-macros-1.19.0-gcc-6.2.0
-     expat-2.2.0-gcc-6.2.0         libxml2-2.9.4-gcc-6.2.0          netlib-scalapack-2.0.2-gcc-6.2.0-netlib-mpich        pkg-config-0.29.1-gcc-6.2.0           xz-5.2.2-gcc-6.2.0
-     gcc-6.2.0-gcc-4.8             lz4-131-gcc-6.2.0                netlib-scalapack-2.0.2-gcc-6.2.0-netlib-openmpi      py-nose-1.3.7-gcc-6.2.0               zlib-1.2.8-gcc-6.2.0
-     gmp-6.1.1-gcc-6.2.0           lzma-4.32.7-gcc-6.2.0            netlib-scalapack-2.0.2-gcc-6.2.0-openblas-mpich      py-numpy-1.11.1-gcc-6.2.0-openblas
-     hwloc-1.11.4-gcc-6.2.0        lzo-2.09-gcc-6.2.0               netlib-scalapack-2.0.2-gcc-6.2.0-openblas-openmpi    py-scipy-0.18.1-gcc-6.2.0-openblas
-     libarchive-3.2.1-gcc-6.2.0    m4-1.4.17-gcc-6.2.0              nettle-3.2-gcc-6.2.0                                 py-setuptools-25.2.0-gcc-6.2.0
+  ADD OUTPUT
 
 Finally we can set a ``naming_scheme`` to prevent users from loading
 modules that refer to different flavors of the same library/application:
@@ -400,7 +295,7 @@ modules that refer to different flavors of the same library/application:
       whitelist:
         -  gcc
       blacklist:
-        -  '%gcc@4.8'
+        -  '%gcc@4.9.3'
       all:
         conflict:
           - '${PACKAGE}'
@@ -419,16 +314,7 @@ The final result should look like:
 .. code-block:: console
 
   $ module avail
-
-  ------------------------------------------------------------------------ ~/spack/share/spack/modules/linux-Ubuntu14-x86_64 ------------------------------------------------------------------------
-     bzip2/1.0.6-gcc-6.2.0         libpciaccess/0.13.4-gcc-6.2.0    mpich/3.2-gcc-6.2.0                                      openblas/0.2.19-gcc-6.2.0             python/2.7.12-gcc-6.2.0
-     cmake/3.5.2-gcc-6.2.0         libsigsegv/2.10-gcc-6.2.0        ncurses/6.0-gcc-6.2.0                                    openmpi/2.0.1-gcc-6.2.0               sqlite/3.8.5-gcc-6.2.0
-     curl/7.50.3-gcc-6.2.0         libtool/2.4.6-gcc-6.2.0          netlib-lapack/3.6.1-gcc-6.2.0                            openssl/1.0.2j-gcc-6.2.0              util-macros/1.19.0-gcc-6.2.0
-     expat/2.2.0-gcc-6.2.0         libxml2/2.9.4-gcc-6.2.0          netlib-scalapack/2.0.2-gcc-6.2.0-netlib-mpich            pkg-config/0.29.1-gcc-6.2.0           xz/5.2.2-gcc-6.2.0
-     gcc/6.2.0-gcc-4.8             lz4/131-gcc-6.2.0                netlib-scalapack/2.0.2-gcc-6.2.0-netlib-openmpi          py-nose/1.3.7-gcc-6.2.0               zlib/1.2.8-gcc-6.2.0
-     gmp/6.1.1-gcc-6.2.0           lzma/4.32.7-gcc-6.2.0            netlib-scalapack/2.0.2-gcc-6.2.0-openblas-mpich          py-numpy/1.11.1-gcc-6.2.0-openblas
-     hwloc/1.11.4-gcc-6.2.0        lzo/2.09-gcc-6.2.0               netlib-scalapack/2.0.2-gcc-6.2.0-openblas-openmpi (D)    py-scipy/0.18.1-gcc-6.2.0-openblas
-     libarchive/3.2.1-gcc-6.2.0    m4/1.4.17-gcc-6.2.0              nettle/3.2-gcc-6.2.0                                     py-setuptools/25.2.0-gcc-6.2.0
+  ADD OUTPUT
 
 .. note::
   TCL specific directive
@@ -454,7 +340,7 @@ is installed. You can achieve this with Spack by adding an
       whitelist:
         -  gcc
       blacklist:
-        -  '%gcc@4.8'
+        -  '%gcc@4.9.3'
       all:
         conflict:
           - '${PACKAGE}'
@@ -484,21 +370,18 @@ Regenerating the module files should result in something like:
   $ spack module refresh -y --module-type tcl
   ==> Regenerating tcl module files
 
-  $ module show gcc
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     ~/spack/share/spack/modules/linux-Ubuntu14-x86_64/gcc/6.2.0-gcc-4.8:
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  whatis("gcc @6.2.0 ")
-  prepend_path("PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/bin")
-  prepend_path("CMAKE_PREFIX_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/")
-  prepend_path("MANPATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/share/man")
-  prepend_path("PKG_CONFIG_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64/pkgconfig")
-  prepend_path("LD_LIBRARY_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64")
-  setenv("GCC_ROOT","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u")
-  conflict("gcc")
-  help([[The GNU Compiler Collection includes front ends for C, C++, Objective-C,
-  Fortran, and Java.
-  ]])
+  $ module show gcc/6.2.0-gcc-4.9.3
+  -------------------------------------------------------------------
+  /global/homes/m/mamelara/spack/share/spack/modules/cray-CNL-haswell/gcc/6.2.0-gcc-4.9.3:
+
+  module-whatis  gcc @6.2.0
+  prepend-path   PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/bin
+  prepend-path   CMAKE_PREFIX_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/
+  prepend-path   LD_LIBRARY_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/lib
+  prepend-path   MANPATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/man
+  setenv         GCC_ROOT /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy
+  conflict       gcc
+  -------------------------------------------------------------------
 
 As you see the ``gcc`` module has the environment variable ``GCC_ROOT`` set.
 
@@ -517,7 +400,7 @@ etc. in the ``gcc`` module file and apply other custom modifications to the
       whitelist:
         - gcc
       blacklist:
-        - '%gcc@4.8'
+        - '%gcc@4.9.3'
       all:
         conflict:
           - '${PACKAGE}'
@@ -558,50 +441,38 @@ This time we will be more selective and regenerate only the ``gcc`` and
   $ spack module refresh -y --module-type tcl openmpi
   ==> Regenerating tcl module files
 
-  $ module show gcc
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     ~/spack/share/spack/modules/linux-Ubuntu14-x86_64/gcc/6.2.0-gcc-4.8:
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  whatis("gcc @6.2.0 ")
-  prepend_path("PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/bin")
-  prepend_path("CMAKE_PREFIX_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/")
-  prepend_path("MANPATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/share/man")
-  prepend_path("PKG_CONFIG_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64/pkgconfig")
-  prepend_path("LD_LIBRARY_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u/lib64")
-  setenv("GCC_ROOT","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-4.8/gcc-6.2.0-twd5nqg33hrrssqclcfi5k42eccwxz5u")
-  setenv("CC","gcc")
-  setenv("CXX","g++")
-  setenv("F90","gfortran")
-  setenv("FC","gfortran")
-  setenv("F77","gfortran")
-  conflict("gcc")
-  help([[The GNU Compiler Collection includes front ends for C, C++, Objective-C,
-  Fortran, and Java.
-  ]])
+  $ module show gcc/6.2.0-4.9.3
+  -------------------------------------------------------------------
+  /global/homes/m/mamelara/spack/share/spack/modules/cray-CNL-haswell/gcc/6.2.0-gcc-4.9.3:
+
+  module-whatis  gcc @6.2.0
+  prepend-path   PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/bin
+  prepend-path   CMAKE_PREFIX_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/
+  prepend-path   LD_LIBRARY_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/lib
+  prepend-path   MANPATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy/man
+  setenv     GCC_ROOT /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-4.9.3/gcc-6.2.0-3wm2efxnt3zlu4rkjyfztiwcpquxqeqy
+  setenv     CC gcc
+  setenv     CXX g++
+  setenv     F90 gfortran
+  setenv     FC gfortran
+  setenv     F77 gfortran
+  conflict   gcc
+  -------------------------------------------------------------------
 
   $ module show openmpi
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-     ~/spack/share/spack/modules/linux-Ubuntu14-x86_64/openmpi/2.0.1-gcc-6.2.0:
-  ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  whatis("openmpi @2.0.1 ")
-  prepend_path("PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-6.2.0/openmpi-2.0.1-s3qbtbyh3y5y4gkchmhcuak7th44l53w/bin")
-  prepend_path("CMAKE_PREFIX_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-6.2.0/openmpi-2.0.1-s3qbtbyh3y5y4gkchmhcuak7th44l53w/")
-  prepend_path("LD_LIBRARY_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-6.2.0/openmpi-2.0.1-s3qbtbyh3y5y4gkchmhcuak7th44l53w/lib")
-  prepend_path("PKG_CONFIG_PATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-6.2.0/openmpi-2.0.1-s3qbtbyh3y5y4gkchmhcuak7th44l53w/lib/pkgconfig")
-  prepend_path("MANPATH","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-6.2.0/openmpi-2.0.1-s3qbtbyh3y5y4gkchmhcuak7th44l53w/share/man")
-  setenv("SLURM_MPI_TYPE","pmi2")
-  setenv("OMPI_MCA_BTL_OPENIB_WARN_DEFAULT_GID_PREFIX","0")
-  setenv("OPENMPI_ROOT","~/spack/opt/spack/linux-Ubuntu14-x86_64/gcc-6.2.0/openmpi-2.0.1-s3qbtbyh3y5y4gkchmhcuak7th44l53w")
-  conflict("openmpi")
-  help([[The Open MPI Project is an open source Message Passing Interface
-  implementation that is developed and maintained by a consortium of
-  academic, research, and industry partners. Open MPI is therefore able to
-  combine the expertise, technologies, and resources from all across the
-  High Performance Computing community in order to build the best MPI
-  library available. Open MPI offers advantages for system and software
-  vendors, application developers and computer science researchers.
-  ]])
+  -------------------------------------------------------------------
+  /global/homes/m/mamelara/spack/share/spack/modules/cray-CNL-haswell/openmpi/2.0.1-gcc-6.2.0:
 
+  module-whatis  openmpi @2.0.1
+  prepend-path   PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak/bin
+  prepend-path   CMAKE_PREFIX_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak/
+  prepend-path   LD_LIBRARY_PATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak/lib
+  prepend-path   MANPATH /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak/man
+  setenv     SLURM_MPI_TYPE pmi2
+  setenv     OMPI_MCA_BTL_OPENIB_WARN_DEFAULT_GID_PREFIX 0
+  setenv     OPENMPI_ROOT /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  conflict   openmpi
+  -------------------------------------------------------------------
 
 ---------------------
 Autoload dependencies
@@ -707,6 +578,12 @@ and will contain code to autoload all the dependencies:
   Autoloading python/2.7.12-gcc-6.2.0
   Autoloading openblas/0.2.19-gcc-6.2.0
   Autoloading py-numpy/1.11.1-gcc-6.2.0-openblas
+
+
+.. note::
+  The rest of this tutorial focuses on lmod modules which are not present on Cori.
+  If you are interested and have lmod installed on a different machine feel free
+  to follow the next section.
 
 -----------------------------
 Lua hierarchical module files

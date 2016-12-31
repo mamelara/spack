@@ -367,3 +367,70 @@ Let's see what our config looks like now:
 install_tree has changed but the rest has not. This is because spack overrides
 single settings when they are declared in other scopes. In order to fully
 override a scope you need to replace ``config:`` with  ``config::``.
+
+###########################
+Customizing Builds
+###########################
+
+We briefly talked about using external packages during our tutorial of basic
+usage. This is all done using a packages.yaml configuration file. As a review,
+all that is needed to use an external package is a spec that is as fully
+concretized as possible (i.e a spec with a package version, a compiler and 
+compiler version, and an architecture) and a module name or path to the
+installed package.
+
+-----------------------
+Preferred Concretization
+-----------------------
+
+You can declare certain packages and compilers to be preferred when building
+than other options. For example let's take a look at our packages.yaml file
+located in ``$SPACK_ROOT/etc/spack/packages.yaml``.
+
+.. code-block:: yaml
+  packages:
+    all:
+      compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
+      providers:
+        mpi: [mpich, openmpi]
+        blas: [openblas]
+        lapack: [openblas]
+        pil: [py-pillow]
+
+We currently have gcc-6.2.0 to be the preferred compiler for gcc and 
+intel-17.0.1.132 to be the preferred compiler for intel. We also have the order set to have
+the gcc compiler to be the default compiler when no compiler is specified
+through the spec.
+
+We can confirm this by using the ``spack spec <package_name>`` command:
+
+.. code-block:: console
+  $ spack spec zlib
+  Input spec
+  --------------------------------
+  zlib
+
+  Normalized
+  --------------------------------
+  zlib
+
+  Concretized
+  --------------------------------
+  zlib@1.2.8%gcc@6.2.0+pic arch=cray-CNL-haswell
+
+If we switch the order around and put ``intel@17.0.1.132`` as our default and
+subsequently provide a spec, Spack will concretize using our intel compiler.
+
+.. code-block:: console
+  $ spack spec zlib
+  Input spec
+  --------------------------------
+  zlib
+
+  Normalized
+  --------------------------------
+  zlib
+
+  Concretized
+  --------------------------------
+  zlib@1.2.8%intel@17.0.1.132+pic arch=cray-CNL-haswell
