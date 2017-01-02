@@ -155,21 +155,6 @@ compilers:
     flags: {}
     modules:
     - PrgEnv-intel
-    - intel/17.0.1.132
-    operating_system: CNL
-    paths:
-      cc: cc
-      cxx: CC
-      f77: ftn
-      fc: ftn
-    spec: intel@17.0.1.132
-    target: any
-- compiler:
-    environment: {}
-    extra_rpaths: []
-    flags: {}
-    modules:
-    - PrgEnv-intel
     - intel/16.0.3.210
     operating_system: CNL
     paths:
