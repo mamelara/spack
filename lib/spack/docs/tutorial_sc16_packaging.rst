@@ -39,6 +39,13 @@ A few things before we get started:
   successive versions of the Python code in
   ``$SPACK_ROOT/lib/spack/docs/tutorial/examples``.
 
+- In order to prevent long build times, and also showcase a bit of Spack's
+  external linking, go to ``$SPACK_ROOT/etc/spack/packages.yaml``
+  and add ``buildable: False`` to ``hdf5`` and ``mpich``
+
+.. code-block:: console
+
+
 -------------------------
 Creating the Package File
 -------------------------
@@ -184,7 +191,7 @@ dependencies before building mpileaks.  Note that the mpi dependency is a
 different kind of beast than the adept-utils and callpath dependencies;
 there is no mpi package available in Spack.  Instead mpi is a virtual
 dependency.  Spack may satisfy that dependency by installing packages
-such as ``openmpi`` or ``mvapich``.  See the :ref:`packaging-guide` for more
+such as ``openmpi`` or ``mpich``.  See the :ref:`packaging-guide` for more
 information on virtual dependencies.
 
 Now when we try to install this package a lot more happens:
@@ -219,7 +226,7 @@ Note that this command may take a while to run and produce more output if
 you don't have an MPI already installed or configured in Spack.
 
 Now Spack has identified and made sure all of our dependencies have been
-built.  It found the ``openmpi`` package that will satisfy our ``mpi``
+built.  It found the ``mpich`` package that will satisfy our ``mpi``
 dependency, and the ``callpath`` and ``adept-utils`` package to satisfy our
 concrete dependencies.
 
