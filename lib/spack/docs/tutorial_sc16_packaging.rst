@@ -38,12 +38,29 @@ A few things before we get started:
 - We'll be writing Python code as part of this tutorial.  You can find
   successive versions of the Python code in
   ``$SPACK_ROOT/lib/spack/docs/tutorial/examples``.
-
+- Make sure to uninstall all your previously built packages by running
+  ``spack uninstall --all``
 - In order to prevent long build times, and also showcase a bit of Spack's
   external linking, go to ``$SPACK_ROOT/etc/spack/packages.yaml``
   and add ``buildable: False`` to ``hdf5`` and ``mpich``
 
-.. code-block:: console
+.. code-block:: yaml
+
+ hdf5:
+    buildable: False
+    modules:
+        hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-haswell: cray-hdf5/1.8.16
+        hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-haswell: cray-hdf5/1.8.16
+        hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+        hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+  mpich:
+    buildable: False
+    modules:
+        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4
+        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
+        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
+        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
+
 
 
 -------------------------
