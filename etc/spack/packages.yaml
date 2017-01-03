@@ -17,7 +17,7 @@ packages:
   all:
     compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
     providers:
-      mpi: [openmpi, mpich]
+      mpi: [mpich, openmpi]
       blas: [openblas]
       lapack: [openblas]
       pil: [py-pillow]
@@ -27,6 +27,12 @@ packages:
         hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-haswell: cray-hdf5/1.8.16
         hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
         hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+  mpich:
+    modules:
+        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4
+        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
+        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
+        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
   pkg-config:
       buildable: False
       paths:
@@ -41,9 +47,3 @@ packages:
           netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-haswell: cray-netcdf/4.4.1
           netcdf@4.4.1%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1
           netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1
-  mpich:
-    modules:
-        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4
-        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
-        mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
-        mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
