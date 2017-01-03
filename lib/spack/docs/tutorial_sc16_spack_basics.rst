@@ -404,7 +404,7 @@ dependency. If we install it "out of the box," it will build with
 
 .. code-block:: console
 
-  spack install --fake hdf5
+  $ spack install --fake hdf5
   ==> Installing hdf5
   ==> Installing mpich
   ==> Building mpich [AutotoolsPackage]
@@ -430,7 +430,7 @@ support.
 
 .. code-block:: console
 
-  spack install --fake hdf5~mpi
+  $ spack install --fake hdf5~mpi
   ==> Installing hdf5
   ==> zlib is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
   ==> Building hdf5 [AutotoolsPackage]
@@ -439,7 +439,7 @@ support.
   [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-axmycpvg3d5mdxyxiydq6aqw2kdzbxks
 
 
-We might also want to install HDF5 with a different MPI
+We might also want to install ``HDF5`` with a different MPI
 implementation. While MPI is not a package itself, packages can depend on
 abstract interfaces like MPI. Spack handles these through "virtual
 dependencies." A package, such as HDF5, can depend on the MPI
@@ -449,7 +449,7 @@ an MPI dependency. For example, we can build HDF5 with MPI support
 provided by mpich by specifying a dependency on ``openmpi``. Spack also
 supports versioning of virtual dependencies. A package can depend on the
 MPI interface at version 3, and provider packages specify what version of
-the interface *they* provide. The partial spec ``^mpi@3`` can be safisfied
+the interface *they* provide. The partial spec ``^mpi@3`` can be satisfied
 by any of several providers.
 
 .. code-block:: console
@@ -502,7 +502,7 @@ We'll do a quick check in on what we have installed so far.
 
 .. code-block:: console
 
-  spack find -ldf
+  $ spack find -ldf
   ==> 21 installed packages.
   -- cray-CNL-haswell / gcc@6.2.0 ---------------------------------
   axmycpv    hdf5@1.10.0-patch1%gcc
@@ -1114,6 +1114,7 @@ also show the path to which a spack package was installed using the ``-p``
 command.
 
 .. code-block:: console
+
   $ spack find -pe
   ==> 41 installed packages.
   -- cray-CNL-haswell / gcc@6.2.0 ---------------------------------
@@ -1281,6 +1282,7 @@ also be waiting for it to install. If we run the command now, it will
 return no new compilers.
 
 .. code-block:: console
+
   $ spack compiler add /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/gcc-6.1.0-ap2f4ijhyrvu4hftz3tth43nouvpsluv
   ==> Found no new compilers
 
@@ -1358,6 +1360,7 @@ So if you want to include cray's own MPI, you will want to add mpich to this
 configuration file like using this entry:
 
 .. code-block:: yaml
+
   mpich:
     buildable: False
     modules:
@@ -1367,8 +1370,8 @@ configuration file like using this entry:
         mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
 
 
-
 .. code-block:: yaml
+
   packages:
     all:
       compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
