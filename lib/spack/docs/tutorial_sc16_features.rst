@@ -7,6 +7,7 @@ Feature Overview
 This page serves as a quick highlight of all the different features and 
 configurations that are available to you in spack. 
 
+.. _feature_overview-scope:
 ------------------
 Scope
 ------------------

@@ -6,9 +6,8 @@ Tutorial: Spack 101
 
 This was the 3-hour introduction to Spack with lectures and live demos.  It
 was presented as a tutorial at `Supercomputing 2016
-<http://sc16.supercomputing.org>`_. For NERSC, we will be following an abridged
-version of the tutorial as well as highlight some features available in Spack
-that were not presented at SC16.
+<http://sc16.supercomputing.org>`_. We will be running through a modified version
+of this tutorial meant for NERSC.
 
 .. _sc16-slides:
 

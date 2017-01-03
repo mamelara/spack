@@ -92,7 +92,8 @@ As a reminder be sure to add ``-j4`` like so:
 ``spack install -j4 <package_name>``
 
 .. code-block:: console
-
+    
+    $ spack install -j4 libelf
     ==> Installing libelf
     ==> Using cached archive: /global/u2/m/mamelara/spack/var/spack/cache/libelf/libelf-0.8.13.tar.gz
     ==> Staging archive: /global/u2/m/mamelara/spack/var/spack/stage/libelf-0.8.13-bkwhzgecutmhfzo2fsaybsya2ldhxgjf/libelf-0.8.13.tar.gz
@@ -112,6 +113,8 @@ configurations of the package. The ``%`` sigil is used to specify
 compilers.
 
 .. code-block:: console
+
+    $ spack install -j4 libelf %intel
     ==> Installing libelf
     ==> Using cached archive: /global/u2/m/mamelara/spack/var/spack/cache/libelf/libelf-0.8.13.tar.gz
     ==> Staging archive: /global/u2/m/mamelara/spack/var/spack/stage/libelf-0.8.13-ununouuxni5psalrxikvscx4wpagpktd/libelf-0.8.13.tar.gz
@@ -162,7 +165,7 @@ compilers.
 
 .. code-block:: console
 
-  $ spack install libelf @0.8.12
+  $ spack install -j4 libelf @0.8.12
   ==> Installing libelf
   ==> Trying to fetch from ~/spack/var/spack/cache/libelf/libelf-0.8.12.tar.gz
   curl: (37) Couldn't open file ~/spack/var/spack/cache/libelf/libelf-0.8.12.tar.gz
@@ -182,7 +185,7 @@ compilers.
   [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/libelf-0.8.12-xixqj2vhx6ulmo4lgcqfedtrgrxqziah
 
 
-  $ spack install libelf %intel@16.0.3.210
+  $ spack install libelf -j4 %intel@16.0.3.210
   ==> Installing libelf
   ==> Trying to fetch from ~/spack/var/spack/cache/libelf/libelf-0.8.13.tar.gz
   ################################################################################################################################################################################# 100.0%
@@ -400,6 +403,7 @@ dependency. If we install it "out of the box," it will build with
 ``openmpi``.
 
 .. code-block:: console
+
   spack install --fake hdf5
   ==> Installing hdf5
   ==> Installing zlib
@@ -456,6 +460,7 @@ the same syntax as compiler flags.  Here we can install HDF5 without MPI
 support.
 
 .. code-block:: console
+
   spack install --fake hdf5~mpi
   ==> Installing hdf5
   ==> zlib is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
