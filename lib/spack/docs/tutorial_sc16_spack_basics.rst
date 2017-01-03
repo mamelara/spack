@@ -400,57 +400,26 @@ limited tutorial time.
 
 ``HDF5`` is an example of a more complicated package, with an MPI
 dependency. If we install it "out of the box," it will build with
-``openmpi``.
+``mpich``.
 
 .. code-block:: console
 
   spack install --fake hdf5
   ==> Installing hdf5
+  ==> Installing mpich
+  ==> Building mpich [AutotoolsPackage]
+  ==> Successfully installed mpich
+    Fetch: .  Build: 0.17s.  Total: 0.17s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
   ==> Installing zlib
   ==> Building zlib [AutotoolsPackage]
   ==> Successfully installed zlib
-  Fetch: .  Build: 0.12s.  Total: 0.12s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
-  ==> Installing openmpi
-  ==> Installing hwloc
-  ==> Installing libpciaccess
-  ==> Installing util-macros
-  ==> Building util-macros [Package]
-  ==> Successfully installed util-macros
-  Fetch: .  Build: 0.12s.  Total: 0.12s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/util-macros-1.19.0-ojeaursjlw3wxrd5dtkkhnovnomej75v
-  ==> Installing libtool
-  ==> Installing m4
-  ==> Installing libsigsegv
-  ==> Building libsigsegv [AutotoolsPackage]
-  ==> Successfully installed libsigsegv
-  Fetch: .  Build: 0.09s.  Total: 0.09s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/libsigsegv-2.10-cro3222hkjvzqoj4wa7ly2rqf7bisdoc
-  ==> Building m4 [AutotoolsPackage]
-  ==> Successfully installed m4
-  Fetch: .  Build: 0.17s.  Total: 0.17s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/m4-1.4.17-ixzoggem36bu3hjojtd2i3e6wc5gbqyh
-  ==> Building libtool [AutotoolsPackage]
-  ==> Successfully installed libtool
-  Fetch: .  Build: 0.09s.  Total: 0.09s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/libtool-2.4.6-rt7axrxfbcievmeswzvmwfcmdkvrrk4e
-  ==> pkg-config is externally installed in /usr/bin/pkg-config
-  ==> Building libpciaccess [Package]
-  ==> Successfully installed libpciaccess
-  Fetch: .  Build: 0.13s.  Total: 0.13s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/libpciaccess-0.13.4-akapxtmzggm5ono2bxmldw36aobt7rep
-  ==> Building hwloc [Package]
-  ==> Successfully installed hwloc
-  Fetch: .  Build: 0.18s.  Total: 0.18s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hwloc-1.11.4-djmeswyv7adqjhuzfyoh527a7ewyvkit
-  ==> Building openmpi [AutotoolsPackage]
-  ==> Successfully installed openmpi
-  Fetch: .  Build: 0.29s.  Total: 0.29s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
   ==> Building hdf5 [AutotoolsPackage]
   ==> Successfully installed hdf5
-  Fetch: .  Build: 0.43s.  Total: 0.43s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-oftj7ewtw7dx4dw7o35sdkeqxfvvkxnn
+    Fetch: .  Build: 0.45s.  Total: 0.45s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-blx6lqfvfq7plwj4q7adsd4x7mwwxppp
 
 Spack packages can also have variants. Boolean variants can be specified
 using the ``+`` and ``~`` or ``-`` sigils. There are two sigils for
@@ -485,18 +454,49 @@ by any of several providers.
 
 .. code-block:: console
 
-  $ spack install --fake hdf5+mpi ^mpich
+  $ spack install --fake hdf5+mpi ^openmpi
   ==> Installing hdf5
-  ==> Installing mpich
-  ==> Building mpich [AutotoolsPackage]
-  ==> Successfully installed mpich
-    Fetch: .  Build: 0.09s.  Total: 0.09s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
-  ==> zlib is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
+  ==> zlib is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
+  ==> Installing openmpi
+  ==> Installing hwloc
+  ==> Installing libpciaccess
+  ==> Installing util-macros
+  ==> Building util-macros [Package]
+  ==> Successfully installed util-macros
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/util-macros-1.19.0-ojeaursjlw3wxrd5dtkkhnovnomej75v
+  ==> Installing libtool
+  ==> Installing m4
+  ==> Installing libsigsegv
+  ==> Building libsigsegv [AutotoolsPackage]
+  ==> Successfully installed libsigsegv
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/libsigsegv-2.10-cro3222hkjvzqoj4wa7ly2rqf7bisdoc
+  ==> Building m4 [AutotoolsPackage]
+  ==> Successfully installed m4
+    Fetch: .  Build: 0.30s.  Total: 0.30s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/m4-1.4.17-ixzoggem36bu3hjojtd2i3e6wc5gbqyh
+  ==> Building libtool [AutotoolsPackage]
+  ==> Successfully installed libtool
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/libtool-2.4.6-rt7axrxfbcievmeswzvmwfcmdkvrrk4e
+  ==> pkg-config is externally installed in /usr/bin/pkg-config
+  ==> Building libpciaccess [Package]
+  ==> Successfully installed libpciaccess
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/libpciaccess-0.13.4-akapxtmzggm5ono2bxmldw36aobt7rep
+  ==> Building hwloc [Package]
+  ==> Successfully installed hwloc
+    Fetch: .  Build: 0.47s.  Total: 0.47s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hwloc-1.11.4-djmeswyv7adqjhuzfyoh527a7ewyvkit
+  ==> Building openmpi [AutotoolsPackage]
+  ==> Successfully installed openmpi
+    Fetch: .  Build: 0.64s.  Total: 0.64s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
   ==> Building hdf5 [AutotoolsPackage]
   ==> Successfully installed hdf5
-    Fetch: .  Build: 0.20s.  Total: 0.20s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-blx6lqfvfq7plwj4q7adsd4x7mwwxppp
+    Fetch: .  Build: 0.91s.  Total: 0.91s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-oftj7ewtw7dx4dw7o35sdkeqxfvvkxnn
 
 We'll do a quick check in on what we have installed so far.
 
@@ -572,12 +572,23 @@ DAG as a graph.
 
 .. code-block:: console
 
-  $ spack graph hdf5+mpi ^mpich
+  $ spack graph hdf5+mpi ^openmpi
   o  hdf5
   |\
   o |  zlib
-   /
-  o  mpich
+  /
+  o  openmpi
+  o  hwloc
+  o  libpciaccess
+  |\
+  | |\
+  o | |  util-macros
+  / /
+  o |  pkg-config
+  /
+  o  libtool
+  o  m4
+  o  libsigsegv
 
 You may also have noticed that there are some packages shown in the
 ``spack find -d`` output that we didn't install explicitly. These are
@@ -599,118 +610,118 @@ let's look at a more complicated package.
 
 .. code-block:: console
 
-  $ spack install --fake trilinos
+  $ spack install --fake trilinos 
   ==> Installing trilinos
-  ==> Installing superlu-dist
-  ==> openmpi is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
-  ==> Installing parmetis
-  ==> openmpi is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  ==> Installing hypre
+  ==> mpich is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
+  ==> Installing openblas
+  ==> Building openblas [MakefilePackage]
+  ==> Successfully installed openblas
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> Building hypre [Package]
+  ==> Successfully installed hypre
+    Fetch: .  Build: 0.48s.  Total: 0.48s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hypre-2.11.1-7rgpm4j4la3t7fy7sb2gdfhdushopjw4
   ==> Installing cmake
   ==> Installing ncurses
   ==> Building ncurses [Package]
   ==> Successfully installed ncurses
-  Fetch: .  Build: 0.14s.  Total: 0.14s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/ncurses-6.0-ti24btafu5zwhzgzcy5in43e5weafmyr
+    Fetch: .  Build: 0.19s.  Total: 0.19s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/ncurses-6.0-ti24btafu5zwhzgzcy5in43e5weafmyr
   ==> Installing openssl
-  ==> zlib is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
+  ==> zlib is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
   ==> Building openssl [Package]
   ==> Successfully installed openssl
-  Fetch: .  Build: 0.19s.  Total: 0.19s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openssl-1.0.2j-rtibvnmwjcos263btri3d4lrtucnupa6
+    Fetch: .  Build: 0.31s.  Total: 0.31s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openssl-1.0.2j-rtibvnmwjcos263btri3d4lrtucnupa6
   ==> Building cmake [Package]
   ==> Successfully installed cmake
-  Fetch: .  Build: 0.33s.  Total: 0.33s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
-  ==> Installing metis
-  ==> cmake is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
-  ==> Building metis [Package]
-  ==> Successfully installed metis
-  Fetch: .  Build: 0.12s.  Total: 0.12s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
-  ==> Building parmetis [Package]
-  ==> Successfully installed parmetis
-  Fetch: .  Build: 0.55s.  Total: 0.55s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-ueykxwydbhavcg5nlvoecxrl7clz6oby
-  ==> Installing openblas
-  ==> Building openblas [MakefilePackage]
-  ==> Successfully installed openblas
-  Fetch: .  Build: 0.09s.  Total: 0.09s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-  ==> metis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
-  ==> Building superlu-dist [Package]
-  ==> Successfully installed superlu-dist
-  Fetch: .  Build: 0.75s.  Total: 0.75s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/superlu-dist-5.1.1-5c7vjzau6t4xwsg3suzylcp23rpb6a2m
-  ==> cmake is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+    Fetch: .  Build: 0.77s.  Total: 0.77s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
   ==> Installing glm
-  ==> cmake is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+  ==> cmake is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
   ==> Building glm [Package]
   ==> Successfully installed glm
-  Fetch: .  Build: 0.14s.  Total: 0.14s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/glm-0.9.7.1-mwxf4sfxyzbjb35ubltsrjrvbkavlbkt
-  ==> Installing hypre
-  ==> openmpi is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
-  ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-  ==> Building hypre [Package]
-  ==> Successfully installed hypre
-  Fetch: .  Build: 0.46s.  Total: 0.46s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hypre-2.11.1-miedlysnmdrbhlxmsedwwoda7s7ngru7
-  ==> metis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+    Fetch: .  Build: 0.19s.  Total: 0.19s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/glm-0.9.7.1-mwxf4sfxyzbjb35ubltsrjrvbkavlbkt
+  ==> Installing superlu-dist
+  ==> mpich is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
+  ==> Installing metis
+  ==> cmake is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+  ==> Building metis [Package]
+  ==> Successfully installed metis
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+  ==> Installing parmetis
+  ==> mpich is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
+  ==> metis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+  ==> cmake is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+  ==> Building parmetis [Package]
+  ==> Successfully installed parmetis
+    Fetch: .  Build: 0.58s.  Total: 0.58s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-anb7yswybmszhofapro5avhgsqtc5dbm
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> Building superlu-dist [Package]
+  ==> Successfully installed superlu-dist
+    Fetch: .  Build: 0.95s.  Total: 0.95s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/superlu-dist-5.1.1-asxd3ehyyl3t3fobzzguuh7e24sh2qp4
+  ==> hdf5 is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-blx6lqfvfq7plwj4q7adsd4x7mwwxppp
+  ==> metis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
   ==> Installing netlib-scalapack
-  ==> openmpi is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
-  ==> cmake is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
-  ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> mpich is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
+  ==> cmake is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
   ==> Building netlib-scalapack [Package]
   ==> Successfully installed netlib-scalapack
-  Fetch: .  Build: 0.47s.  Total: 0.47s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-gfj6bxd6z33u52aiv6gxt45bikcdfyfe
+    Fetch: .  Build: 0.47s.  Total: 0.47s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-7bc2uzwei7unu7pqz32znncp4kkea5ea
   ==> Installing suite-sparse
   ==> Installing tbb
   ==> Building tbb [Package]
   ==> Successfully installed tbb
-  Fetch: .  Build: 0.09s.  Total: 0.09s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/tbb-2017.3-gsc4orgvu5jnxab6ywcpuxuhwkeztnlc
-  ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-  ==> metis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/tbb-2017.3-gsc4orgvu5jnxab6ywcpuxuhwkeztnlc
+  ==> metis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
   ==> Building suite-sparse [Package]
   ==> Successfully installed suite-sparse
-  Fetch: .  Build: 0.38s.  Total: 0.38s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/suite-sparse-4.5.3-2udlijaisvewibo6harw3kimhttil2td
-  ==> openmpi is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+    Fetch: .  Build: 0.79s.  Total: 0.79s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/suite-sparse-4.5.3-2udlijaisvewibo6harw3kimhttil2td
   ==> netcdf is externally installed in /opt/cray/pe/netcdf/4.4.1/GNU/5.1
   ==> Installing mumps
-  ==> netlib-scalapack is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-gfj6bxd6z33u52aiv6gxt45bikcdfyfe
-  ==> openmpi is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
-  ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> mpich is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
+  ==> netlib-scalapack is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-7bc2uzwei7unu7pqz32znncp4kkea5ea
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
   ==> Building mumps [Package]
   ==> Successfully installed mumps
-  Fetch: .  Build: 0.57s.  Total: 0.57s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mumps-5.0.2-yrl4i6jadjvm6l7vqtt3zvyu4gahyx2h
+    Fetch: .  Build: 0.72s.  Total: 0.72s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mumps-5.0.2-andq4bkq5czbzhdwvqafag23zs2v5meg
+  ==> mpich is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
   ==> Installing matio
-  ==> zlib is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
-  ==> hdf5 is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-oftj7ewtw7dx4dw7o35sdkeqxfvvkxnn
+  ==> zlib is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
+  ==> hdf5 is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-blx6lqfvfq7plwj4q7adsd4x7mwwxppp
   ==> Building matio [AutotoolsPackage]
   ==> Successfully installed matio
-  Fetch: .  Build: 0.53s.  Total: 0.53s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/matio-1.5.9-kdwi6ggu4d6bbb7hawos6gmwdtmev6fz
+    Fetch: .  Build: 0.59s.  Total: 0.59s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/matio-1.5.9-ozit2bfc5bj7nvyoyd42h6ar53kqdyv4
   ==> Installing boost
   ==> Installing bzip2
   ==> Building bzip2 [Package]
   ==> Successfully installed bzip2
-  Fetch: .  Build: 0.14s.  Total: 0.14s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/bzip2-1.0.6-js6dsfr4ifivstb2bdx6zv5wxddgn3u2
-  ==> zlib is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
+    Fetch: .  Build: 0.18s.  Total: 0.18s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/bzip2-1.0.6-js6dsfr4ifivstb2bdx6zv5wxddgn3u2
+  ==> zlib is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
   ==> Building boost [Package]
   ==> Successfully installed boost
-  Fetch: .  Build: 0.27s.  Total: 0.27s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/boost-1.62.0-ts3d2trvn6du2n2kcjgbhiwkde3v2upt
-  ==> parmetis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-ueykxwydbhavcg5nlvoecxrl7clz6oby
-  ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-  ==> hdf5 is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-oftj7ewtw7dx4dw7o35sdkeqxfvvkxnn
+    Fetch: .  Build: 0.53s.  Total: 0.53s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/boost-1.62.0-ts3d2trvn6du2n2kcjgbhiwkde3v2upt
+  ==> parmetis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-anb7yswybmszhofapro5avhgsqtc5dbm
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
   ==> Building trilinos [CMakePackage]
   ==> Successfully installed trilinos
-  Fetch: .  Build: 2.18s.  Total: 2.18s.
-  [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/trilinos-12.10.1-tb3x3fpq564mozkkkcbt4v6bpopi2loz
+    Fetch: .  Build: 3.82s.  Total: 3.82s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/trilinos-12.10.1-lian6yd4o67oszehn4v52x5ftkyaysdb
 
 Now we're starting to see the power of Spack. Trilinos has 11 top level
 dependecies, many of which have dependencies of their own. Installing
@@ -722,73 +733,73 @@ the system), but only 20 seconds of programmer time.
 Spack manages constistency of the entire DAG. Every MPI dependency will
 be satisfied by the same configuration of MPI, etc. If we install
 ``trilinos`` again specifying a dependency on our previous HDF5 built
-with ``mpich``:
+with ``openmpi``:
 
 .. code-block:: console
 
-  $ spack install --fake trilinos ^hdf5+mpi ^mpich
-    ==> Installing trilinos
-    ==> Installing superlu-dist
-    ==> mpich is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
-    ==> metis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
-    ==> Installing parmetis
-    ==> mpich is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
-    ==> metis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
-    ==> cmake is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
-    ==> Building parmetis [Package]
-    ==> Successfully installed parmetis
-      Fetch: .  Build: 0.34s.  Total: 0.34s.
-    [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-anb7yswybmszhofapro5avhgsqtc5dbm
-    ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-    ==> Building superlu-dist [Package]
-    ==> Successfully installed superlu-dist
-      Fetch: .  Build: 0.49s.  Total: 0.49s.
-    [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/superlu-dist-5.1.1-asxd3ehyyl3t3fobzzguuh7e24sh2qp4
-    ==> cmake is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
-    ==> glm is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/glm-0.9.7.1-mwxf4sfxyzbjb35ubltsrjrvbkavlbkt
-    ==> Installing hypre
-    ==> mpich is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
-    ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-    ==> Building hypre [Package]
-    ==> Successfully installed hypre
-      Fetch: .  Build: 0.25s.  Total: 0.25s.
-    [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hypre-2.11.1-7rgpm4j4la3t7fy7sb2gdfhdushopjw4
-    ==> metis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
-    ==> Installing netlib-scalapack
-    ==> mpich is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
-    ==> cmake is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
-    ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-    ==> Building netlib-scalapack [Package]
-    ==> Successfully installed netlib-scalapack
-    Fetch: .  Build: 0.24s.  Total: 0.24s.
-    [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-7bc2uzwei7unu7pqz32znncp4kkea5ea
-    ==> suite-sparse is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/suite-sparse-4.5.3-2udlijaisvewibo6harw3kimhttil2td
-    ==> netcdf is externally installed in /opt/cray/pe/netcdf/4.4.1/GNU/5.1
-    ==> Installing mumps
-    ==> mpich is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
-    ==> netlib-scalapack is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-7bc2uzwei7unu7pqz32znncp4kkea5ea
-    ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-    ==> Building mumps [Package]
-    ==> Successfully installed mumps
-      Fetch: .  Build: 0.34s.  Total: 0.34s.
-    [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mumps-5.0.2-andq4bkq5czbzhdwvqafag23zs2v5meg
-    ==> mpich is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/mpich-3.2-6zlz4tveokpsolm4c4fb7vybtvlwt7qa
-    ==> Installing matio
-    ==> zlib is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
-    ==> hdf5 is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-blx6lqfvfq7plwj4q7adsd4x7mwwxppp
-    ==> Building matio [AutotoolsPackage]
-    ==> Successfully installed matio
-      Fetch: .  Build: 0.25s.  Total: 0.25s.
-    [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/matio-1.5.9-ozit2bfc5bj7nvyoyd42h6ar53kqdyv4
-    ==> boost is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/boost-1.62.0-ts3d2trvn6du2n2kcjgbhiwkde3v2upt
-    ==> parmetis is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-anb7yswybmszhofapro5avhgsqtc5dbm
-    ==> openblas is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
-    ==> hdf5 is already installed in /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-blx6lqfvfq7plwj4q7adsd4x7mwwxppp
-    ==> Building trilinos [CMakePackage]
-    ==> Successfully installed trilinos
-      Fetch: .  Build: 1.74s.  Total: 1.74s.
-    [+] /global/u2/m/mamelara/spack/opt/spack/cray-CNL-haswell/gcc-6.2.0/trilinos-12.10.1-lian6yd4o67oszehn4v52x5ftkyaysdb
-
+  $ spack install --fake trilinos ^hdf5+mpi ^openmpi
+  ==> Installing trilinos
+  ==> Installing hypre
+  ==> openmpi is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> Building hypre [Package]
+  ==> Successfully installed hypre
+    Fetch: .  Build: 0.97s.  Total: 0.97s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hypre-2.11.1-miedlysnmdrbhlxmsedwwoda7s7ngru7
+  ==> cmake is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+  ==> glm is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/glm-0.9.7.1-mwxf4sfxyzbjb35ubltsrjrvbkavlbkt
+  ==> Installing superlu-dist
+  ==> openmpi is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  ==> metis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+  ==> Installing parmetis
+  ==> openmpi is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  ==> metis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+  ==> cmake is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+  ==> Building parmetis [Package]
+  ==> Successfully installed parmetis
+    Fetch: .  Build: 1.07s.  Total: 1.07s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-ueykxwydbhavcg5nlvoecxrl7clz6oby
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> Building superlu-dist [Package]
+  ==> Successfully installed superlu-dist
+    Fetch: .  Build: 1.48s.  Total: 1.48s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/superlu-dist-5.1.1-5c7vjzau6t4xwsg3suzylcp23rpb6a2m
+  ==> hdf5 is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-oftj7ewtw7dx4dw7o35sdkeqxfvvkxnn
+  ==> metis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/metis-5.1.0-hicw2fyxba7mfatl37mcqnpfazkdrrfg
+  ==> Installing netlib-scalapack
+  ==> openmpi is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  ==> cmake is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/cmake-3.7.1-groolt4cgfdp5tg64erxu2pui6xtws6w
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> Building netlib-scalapack [Package]
+  ==> Successfully installed netlib-scalapack
+    Fetch: .  Build: 0.96s.  Total: 0.96s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-gfj6bxd6z33u52aiv6gxt45bikcdfyfe
+  ==> suite-sparse is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/suite-sparse-4.5.3-2udlijaisvewibo6harw3kimhttil2td
+  ==> openmpi is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  ==> netcdf is externally installed in /opt/cray/pe/netcdf/4.4.1/GNU/5.1
+  ==> Installing mumps
+  ==> netlib-scalapack is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/netlib-scalapack-2.0.2-gfj6bxd6z33u52aiv6gxt45bikcdfyfe
+  ==> openmpi is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openmpi-2.0.1-6vi4ni5z7l4pihbugck6rdylnzuws4ak
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> Building mumps [Package]
+  ==> Successfully installed mumps
+    Fetch: .  Build: 1.23s.  Total: 1.23s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/mumps-5.0.2-yrl4i6jadjvm6l7vqtt3zvyu4gahyx2h
+  ==> Installing matio
+  ==> zlib is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/zlib-1.2.8-vnwrdo3al6hojzwcf6wf2rr32skvmw45
+  ==> hdf5 is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/hdf5-1.10.0-patch1-oftj7ewtw7dx4dw7o35sdkeqxfvvkxnn
+  ==> Building matio [AutotoolsPackage]
+  ==> Successfully installed matio
+    Fetch: .  Build: 1.09s.  Total: 1.09s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/matio-1.5.9-kdwi6ggu4d6bbb7hawos6gmwdtmev6fz
+  ==> boost is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/boost-1.62.0-ts3d2trvn6du2n2kcjgbhiwkde3v2upt
+  ==> parmetis is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/parmetis-4.0.3-ueykxwydbhavcg5nlvoecxrl7clz6oby
+  ==> openblas is already installed in /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/openblas-0.2.19-mm74idshhyfxcnwi3wnubmhg5r6kh4zy
+  ==> Building trilinos [CMakePackage]
+  ==> Successfully installed trilinos
+    Fetch: .  Build: 4.39s.  Total: 4.39s.
+  [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/trilinos-12.10.1-tb3x3fpq564mozkkkcbt4v6bpopi2loz
+    
 We see that every package in the trilinos DAG that depends on MPI now
 uses ``mpich``.
 
@@ -859,35 +870,84 @@ command shows the full DAG of the dependency information.
   | | | | |\
   | | | | | |\
   | | | | | | |\
-  | o | | | | | |  netcdf
-  | |\ \ \ \ \ \ \
-  | | |\ \ \ \ \ \ \
-  | | | o | | | | | |  curl
-  | | |/| | | | | | |
+  | | | | | | | |\
+  | | | | | | | | |\
+  | | | | | | | | | |\
+  | | | | | | | | | | |\
+  | | | | | | | | | | | |\
+  | | | | | | | | | | | | |\
+  | | | | | | | | | | | | | |\
+  o | | | | | | | | | | | | | |  superlu-dist
+  |\ \ \ \ \ \ \ \ \ \ \ \ \ \ \
+  | |_|/ / / / / / / / / / / / /
+  |/| | | | | | | | | | | | | |
+  | |\ \ \ \ \ \ \ \ \ \ \ \ \ \
+  | | |_|/ / / / / / / / / / / /
+  | |/| | | | | | | | | | | | |
+  | | |\ \ \ \ \ \ \ \ \ \ \ \ \
+  | | | |_|_|_|_|/ / / / / / / /
+  | | |/| | | | | | | | | | | |
+  | | | | |_|_|/ / / / / / / /
+  | | | |/| | | | | | | | | |
+  | | | | o | | | | | | | | |  suite-sparse
+  | | |_|/| | | | | | | | | |
+  | |/| |/| | | | | | | | | |
+  o | | | | | | | | | | | | |  parmetis
+  |\ \ \ \ \ \ \ \ \ \ \ \ \ \
+  | |_|/ / / / / / / / / / / /
+  |/| | | | | | | | | | | | |
+  | |\ \ \ \ \ \ \ \ \ \ \ \ \
+  | | |_|/ / / / / / / / / / /
+  | |/| | | | | | | | | | | |
+  | | | |_|_|_|_|_|_|_|/ / /
+  | | |/| | | | | | | | | |
+  | | | | | | | o | | | | |  mumps
+  | |_|_|_|_|_|/| | | | | |
+  |/| | | |_|_|/| | | | | |
+  | | | |/| | |/ / / / / /
+  | | | | | |/| | | | | |
+  | | | | | o | | | | | |  netlib-scalapack
+  | |_|_|_|/| | | | | | |
+  |/| | |_|/| | | | | | |
+  | | |/| |/ / / / / / /
+  | | | |/| | | | | | |
+  | o | | | | | | | | |  metis
+  | |/ / / / / / / / /
+  | | | | | | | | o |  glm
+  | | |_|_|_|_|_|/ /
+  | |/| | | | | | |
+  | o | | | | | | |  cmake
+  | |\ \ \ \ \ \ \ \
+  | o | | | | | | | |  openssl
+  | | | | | | o | | |  matio
+  | | |_|_|_|/| | | |
   | |/| | | | | | | |
-  | | | o | | | | | |  openssl
-  | | |/ / / / / / /
-  | |/| | | | | | |
-  | | o | | | | | |  hdf5
-  | |/| | | | | | |
-  | | |/ / / / / /
+  | | | | | | | |/ /
+  | | | | | | |/| |
+  | | | | | | o | |  hdf5
+  | |_|_|_|_|/| | |
+  |/| |_|_|_|/ / /
+  | |/| | | | | |
+  | | | | | | | o  boost
+  | | |_|_|_|_|/|
+  | |/| | | | | |
   | o | | | | | |  zlib
   |  / / / / / /
-  o | | | | | |  swig
-  o | | | | | |  pcre
-   / / / / / /
-  o | | | | |  mpi
-   / / / / /
-  o | | | |  matio
-   / / / /
-  o | | |  lapack
-   / / /
-  o | |  glm
-   / /
-  o |  boost
-   /
-  o  blas
-
+  | | | o | | |  tbb
+  | | |  / / /
+  | | | | o |  hypre
+  | |_|_|/| |
+  |/| | |/ /
+  | | |/| |
+  | | o | |  openblas
+  | |  / /
+  | | o |  netcdf
+  | |  /
+  | o |  ncurses
+  |  /
+  o |  mpich
+  /
+  o  bzip2
 
 You can control how the output is displayed with a number of options.
 
