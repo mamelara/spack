@@ -394,7 +394,7 @@ security ramifications of the feature, but it is coming soon.
 For now, we will switch to doing "fake" installs. When supplied with the
 ``--fake`` flag (primarily used for debugging), Spack computes build
 metadata the same way it normally would, but it does not download the
-source or run the install script for a pacakge. We can use this to
+source or run the install script for a package. We can use this to
 quickly demonstrate some of the more advanced Spack features in our
 limited tutorial time.
 
@@ -484,6 +484,7 @@ the interface *they* provide. The partial spec ``^mpi@3`` can be safisfied
 by any of several providers.
 
 .. code-block:: console
+
   $ spack install --fake hdf5+mpi ^mpich
   ==> Installing hdf5
   ==> Installing mpich
@@ -500,6 +501,8 @@ by any of several providers.
 We'll do a quick check in on what we have installed so far.
 
 .. code-block:: console
+
+  spack find -ldf
   ==> 21 installed packages.
   -- cray-CNL-haswell / gcc@6.2.0 ---------------------------------
   axmycpv    hdf5@1.10.0-patch1%gcc

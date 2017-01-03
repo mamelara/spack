@@ -276,14 +276,8 @@ We can also enter the build area and try to manually run the build:
 
 .. code-block:: console
 
-<<<<<<< HEAD
   $ spack env mpileaks bash
   $ spack cd mpileaks
-=======
-  $ spack cd mpileaks
-  $ spack env mpileaks sh  # or tcsh 
-
->>>>>>> Add output to match mine
 
 The ``spack env`` command spawned a new shell that contains the same
 environment that Spack used to build the mpileaks package (you can
