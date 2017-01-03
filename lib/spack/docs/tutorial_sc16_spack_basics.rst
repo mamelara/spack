@@ -16,11 +16,12 @@ small portions of that output (or merely to the fact that it
 succeeded). The provided output is all from a cluster running Red Hat
 Enterprise Linux.
 
-IMPORTANT NOTE: For NERSC, we will be running this on Cori. 
-In order to avoid clogging up the login nodes it is VERY IMPORTANT that 
-you add `-j8` or anything that does not use all 32 cores. Spack can get greedy 
-and when you have a bunch of people installing and using `-j32` 
-default things can get slow.
+.. _note:
+  For NERSC, we will be running this on Cori. 
+  In order to avoid clogging up the login nodes it is VERY IMPORTANT that 
+  you add -j2 or anything that does not use all 32 cores. Spack can get greedy 
+  and when you have a bunch of people installing and using `-j32` 
+  default things can get slow.
 
 .. _basics-tutorial-install:
 
