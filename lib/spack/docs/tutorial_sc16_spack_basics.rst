@@ -446,7 +446,7 @@ dependencies." A package, such as HDF5, can depend on the MPI
 interface. Other packages (``openmpi``, ``mpich``, ``mvapich``, etc.)
 provide the MPI interface.  Any of these providers can be requested for
 an MPI dependency. For example, we can build HDF5 with MPI support
-provided by mpich by specifying a dependency on ``mpich``. Spack also
+provided by mpich by specifying a dependency on ``openmpi``. Spack also
 supports versioning of virtual dependencies. A package can depend on the
 MPI interface at version 3, and provider packages specify what version of
 the interface *they* provide. The partial spec ``^mpi@3`` can be safisfied
@@ -572,23 +572,12 @@ DAG as a graph.
 
 .. code-block:: console
 
-  $ spack graph hdf5+mpi ^openmpi
+  $ spack graph hdf5+mpi ^mpich
   o  hdf5
   |\
   o |  zlib
   /
-  o  openmpi
-  o  hwloc
-  o  libpciaccess
-  |\
-  | |\
-  o | |  util-macros
-  / /
-  o |  pkg-config
-  /
-  o  libtool
-  o  m4
-  o  libsigsegv
+  o  mpich
 
 You may also have noticed that there are some packages shown in the
 ``spack find -d`` output that we didn't install explicitly. These are
@@ -801,7 +790,7 @@ with ``openmpi``:
   [+] /global/u2/m/mamelara/spack_tutorial/opt/spack/cray-CNL-haswell/gcc-6.2.0/trilinos-12.10.1-tb3x3fpq564mozkkkcbt4v6bpopi2loz
     
 We see that every package in the trilinos DAG that depends on MPI now
-uses ``mpich``.
+uses ``openmpi``.
 
 .. code-block:: console
 
@@ -1377,7 +1366,7 @@ configuration file like using this entry:
         mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
         mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-mpich/7.4.4
 
-Go ahead and copy and paste the full entry into ~/.spack/packages.yaml.
+
 
 .. code-block:: yaml
   packages:
@@ -1394,6 +1383,12 @@ Go ahead and copy and paste the full entry into ~/.spack/packages.yaml.
           hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-haswell: cray-hdf5/1.8.16
           hdf5@1.8.16%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
           hdf5@1.8.16%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-hdf5/1.8.16
+    mpich: 
+        modules: 
+            mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4 
+            mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
+            mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4
+            mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
     pkg-config:
         buildable: False
         paths:
@@ -1408,13 +1403,6 @@ Go ahead and copy and paste the full entry into ~/.spack/packages.yaml.
             netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-haswell: cray-netcdf/4.4.1
             netcdf@4.4.1%gcc@6.2.0 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1
             netcdf@4.4.1%intel@17.0.1.132 arch=cray-CNL-mic_knl: cray-netcdf/4.4.1
-    mpich:
-        buildable: False
-        modules:
-            mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4 
-            mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
-            mpich@7.4.4%gcc@6.2.0 arch=cray-CNL-haswell: cray-mpich/7.4.4
-            mpich@7.4.4%intel@17.0.1.132 arch=cray-CNL-haswell: cray-mpich/7.4.4
 
 As of now manually entering external packages is the only way to add entries to
 the file. Eventually there will be a command that can sanity check and append 
