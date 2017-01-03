@@ -17,7 +17,7 @@ packages:
   all:
     compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
     providers:
-      mpi: [mpich, openmpi]
+      mpi: [openmpi, mpich]
       blas: [openblas]
       lapack: [openblas]
       pil: [py-pillow]
