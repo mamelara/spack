@@ -293,7 +293,7 @@ which in the case of Cray compilers is cc, CC and ftn.
 
 ----------------
 Config.yaml
----------------
+----------------
 
 With config.yaml, you can change some of the behavior of Spack. This includes
 changing the location of the install tree for packages, the location where
@@ -303,6 +303,7 @@ Defaults are these:
 
 .. code-block:: console 
   $ spack config get config
+
   config:
     build_stage:
     - $tempdir
@@ -349,6 +350,7 @@ the directory and placed the install tree into it.
 Let's see what our config looks like now:
 
 .. code-block:: console 
+
   config:
     build_stage:
     - $tempdir
@@ -389,6 +391,7 @@ than other options. For example let's take a look at our packages.yaml file
 located in ``$SPACK_ROOT/etc/spack/packages.yaml``.
 
 .. code-block:: yaml
+
   packages:
     all:
       compiler: [gcc@6.2.0, intel@17.0.1.132, pgi, clang, xl, nag]
@@ -406,6 +409,7 @@ through the spec.
 We can confirm this by using the ``spack spec <package_name>`` command:
 
 .. code-block:: console
+
   $ spack spec zlib
   Input spec
   --------------------------------
@@ -423,6 +427,7 @@ If we switch the order around and put ``intel@17.0.1.132`` as our default and
 subsequently provide a spec, Spack will concretize using our intel compiler.
 
 .. code-block:: console
+
   $ spack spec zlib
   Input spec
   --------------------------------

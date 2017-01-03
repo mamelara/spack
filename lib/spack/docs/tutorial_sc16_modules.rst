@@ -35,6 +35,14 @@ Before proceeding further ensure:
 
 - have :ref:`shell support <shell-support>` activated in Spack
 
+- Add spack modulefiles directory to your MODULEPATH:
+
+.. code-block:: console
+
+  $ export MODULEPATH="$MODULEPATH:$SPACK_ROOT/share/spack/modules/cray-CNL-haswell
+
+``$SPACK_ROOT`` being the location where your spack is installed.
+
 ^^^^^^^^^^^^^^^^^^^^^^
 Fake install gcc-6.2.0
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -42,6 +50,7 @@ Because installs will take long and we are using the shared login nodes, we
 will fake install gcc-6.2.0:
 
 .. code-block:: console
+
   $ spack install --fake gcc@6.2.0%gcc@4.9.3
 
 If your default PrgEnv is intel, you might get some intel compiler output
@@ -53,6 +62,12 @@ Since we are not really doing a real install this can be ignored.
 Build software that will be used in the tutorial
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Before you build uninstall everything so we have a clean Spack.
+
+.. code-block:: console
+  
+  $ spack uninstall --all
+
 Next you should install a few modules that will be used in the tutorial.
 Rather than wait for all these packages to build, let's fake install them:
 
@@ -62,17 +77,35 @@ Rather than wait for all these packages to build, let's fake install them:
 
 Fake install these packages as well
 
-  - ``netlib-scalapack ^openmpi ^openblas``
-  - ``netlib-scalapack ^openmpi ^netlib-lapack``
-  - ``netlib-scalapack ^mpich ^netlib-lapack``
+  - ``$ spack install --fake netlib-scalapack ^openmpi ^openblas``
+  - ``$ spack install --fake netlib-scalapack ^openmpi ^netlib-lapack``
+  - ``$ spack install --fake netlib-scalapack ^mpich ^netlib-lapack``
 
 In the end your environment should look something like:
 
 .. code-block:: console
 
   $ module avail
-  ADD OUTPUT
-
+  # NERSC module output...
+  ----------- /global/homes/m/mamelara/spack_tutorial/share/spack/modules/cray-CNL-haswell/ -----------
+  binutils-2.27-gcc-4.9.3-cb4h6tu          mpc-1.0.3-gcc-4.9.3-5eniuop
+  bison-3.0.4-gcc-4.9.3-li2aeku            mpfr-3.1.4-gcc-4.9.3-oldrzev
+  bzip2-1.0.6-gcc-4.9.3-4vdw2sy            ncurses-6.0-gcc-4.9.3-eojom4i
+  cmake-3.7.1-gcc-6.2.0-groolt4            ncurses-6.0-gcc-6.2.0-ti24bta
+  flex-2.6.1-gcc-4.9.3-z77xnab             netlib-lapack-3.6.1-gcc-6.2.0-xbpjs6n
+  gcc-6.2.0-gcc-4.9.3-phcwckh              netlib-scalapack-2.0.2-gcc-6.2.0-2ukncs7
+  gettext-0.19.8.1-gcc-4.9.3-v4pfe73       netlib-scalapack-2.0.2-gcc-6.2.0-4ok2ap5
+  gmp-6.1.2-gcc-4.9.3-m25fwyp              netlib-scalapack-2.0.2-gcc-6.2.0-gfj6bxd
+  help2man-1.47.4-gcc-4.9.3-ynzj7ma        netlib-scalapack-2.0.2-gcc-6.2.0-mqhupzw
+  hwloc-1.11.4-gcc-6.2.0-djmeswy           openblas-0.2.19-gcc-6.2.0-mm74ids
+  isl-0.14-gcc-4.9.3-uyqqxuu               openmpi-2.0.1-gcc-6.2.0-6vi4ni5
+  libpciaccess-0.13.4-gcc-6.2.0-akapxtm    openssl-1.0.2j-gcc-6.2.0-rtibvnm
+  libsigsegv-2.10-gcc-4.9.3-o3eifqy        tar-1.29-gcc-4.9.3-wx4clye
+  libsigsegv-2.10-gcc-6.2.0-cro3222        util-macros-1.19.0-gcc-6.2.0-ojeaurs
+  libtool-2.4.6-gcc-6.2.0-rt7axrx          xz-5.2.2-gcc-4.9.3-6pu6nbt
+  libxml2-2.9.4-gcc-4.9.3-f4vv5ko          zlib-1.2.8-gcc-4.9.3-34tqb7c
+  m4-1.4.17-gcc-4.9.3-ukvopef              zlib-1.2.8-gcc-6.2.0-vnwrdo3
+  m4-1.4.17-gcc-6.2.0-ixzogge
 
 ------------------------------------------------
 Filter unwanted modifications to the environment
@@ -113,12 +146,33 @@ with the following content:
         filter:
           environment_blacklist: ['CPATH', 'LIBRARY_PATH']
 
+Do this by using the command ``spack config edit modules``.
+
 Next you should regenerate all the module files:
 
 .. code-block:: console
 
   $ spack module refresh --module-type tcl
-  ADD OUTPUT
+  ==> You are about to regenerate tcl module files for:
+
+  -- cray-CNL-haswell / gcc@4.9.3 ---------------------------------
+  cb4h6tu binutils@2.27  v4pfe73 gettext@0.19.8.1  f4vv5ko libxml2@2.9.4  wx4clye tar@1.29
+  li2aeku bison@3.0.4    m25fwyp gmp@6.1.2         ukvopef m4@1.4.17      6pu6nbt xz@5.2.2
+  4vdw2sy bzip2@1.0.6    ynzj7ma help2man@1.47.4   5eniuop mpc@1.0.3      34tqb7c zlib@1.2.8
+  z77xnab flex@2.6.1     uyqqxuu isl@0.14          oldrzev mpfr@3.1.4
+  phcwckh gcc@6.2.0      o3eifqy libsigsegv@2.10   eojom4i ncurses@6.0
+
+  -- cray-CNL-haswell / gcc@6.2.0 ---------------------------------
+  groolt4 cmake@3.7.1          ti24bta ncurses@6.0             mm74ids openblas@0.2.19
+  djmeswy hwloc@1.11.4         xbpjs6n netlib-lapack@3.6.1     6vi4ni5 openmpi@2.0.1
+  akapxtm libpciaccess@0.13.4  mqhupzw netlib-scalapack@2.0.2  rtibvnm openssl@1.0.2j
+  cro3222 libsigsegv@2.10      2ukncs7 netlib-scalapack@2.0.2  ojeaurs util-macros@1.19.0
+  rt7axrx libtool@2.4.6        4ok2ap5 netlib-scalapack@2.0.2  vnwrdo3 zlib@1.2.8
+  ixzogge m4@1.4.17            gfj6bxd netlib-scalapack@2.0.2
+
+  ==> Do you want to proceed ? [y/n]
+  y
+  ==> Regenerating tcl module files
 
 If you take a look now at the module for ``gcc`` you'll see that the unwanted
 paths have disappeared:
@@ -163,7 +217,39 @@ and regenerate the module files:
 .. code-block:: console
 
   $ spack module refresh --module-type tcl --delete-tree
-    ADD OUTPUT
+  ==> You are about to regenerate tcl module files for:
+
+  -- cray-CNL-haswell / gcc@4.9.3 ---------------------------------
+  cb4h6tu binutils@2.27  v4pfe73 gettext@0.19.8.1  f4vv5ko libxml2@2.9.4  wx4clye tar@1.29
+  li2aeku bison@3.0.4    m25fwyp gmp@6.1.2         ukvopef m4@1.4.17      6pu6nbt xz@5.2.2
+  4vdw2sy bzip2@1.0.6    ynzj7ma help2man@1.47.4   5eniuop mpc@1.0.3      34tqb7c zlib@1.2.8
+  z77xnab flex@2.6.1     uyqqxuu isl@0.14          oldrzev mpfr@3.1.4
+  phcwckh gcc@6.2.0      o3eifqy libsigsegv@2.10   eojom4i ncurses@6.0
+
+  -- cray-CNL-haswell / gcc@6.2.0 ---------------------------------
+  groolt4 cmake@3.7.1          ti24bta ncurses@6.0             mm74ids openblas@0.2.19
+  djmeswy hwloc@1.11.4         xbpjs6n netlib-lapack@3.6.1     6vi4ni5 openmpi@2.0.1
+  akapxtm libpciaccess@0.13.4  mqhupzw netlib-scalapack@2.0.2  rtibvnm openssl@1.0.2j
+  cro3222 libsigsegv@2.10      2ukncs7 netlib-scalapack@2.0.2  ojeaurs util-macros@1.19.0
+  rt7axrx libtool@2.4.6        4ok2ap5 netlib-scalapack@2.0.2  vnwrdo3 zlib@1.2.8
+  ixzogge m4@1.4.17            gfj6bxd netlib-scalapack@2.0.2
+
+  ==> Do you want to proceed ? [y/n]
+  y
+  ==> Regenerating tcl module files
+
+  $ module avail
+
+  ----------- /global/homes/m/mamelara/spack_tutorial/share/spack/modules/cray-CNL-haswell/ -----------
+  cmake-3.7.1-gcc-6.2.0-groolt4            netlib-scalapack-2.0.2-gcc-6.2.0-4ok2ap5
+  hwloc-1.11.4-gcc-6.2.0-djmeswy           netlib-scalapack-2.0.2-gcc-6.2.0-gfj6bxd
+  libpciaccess-0.13.4-gcc-6.2.0-akapxtm    netlib-scalapack-2.0.2-gcc-6.2.0-mqhupzw
+  libsigsegv-2.10-gcc-6.2.0-cro3222        openblas-0.2.19-gcc-6.2.0-mm74ids
+  libtool-2.4.6-gcc-6.2.0-rt7axrx          openmpi-2.0.1-gcc-6.2.0-6vi4ni5
+  m4-1.4.17-gcc-6.2.0-ixzogge              openssl-1.0.2j-gcc-6.2.0-rtibvnm
+  ncurses-6.0-gcc-6.2.0-ti24bta            util-macros-1.19.0-gcc-6.2.0-ojeaurs
+  netlib-lapack-3.6.1-gcc-6.2.0-xbpjs6n    zlib-1.2.8-gcc-6.2.0-vnwrdo3
+  netlib-scalapack-2.0.2-gcc-6.2.0-2ukncs7
 
 This time it is convenient to pass the option ``--delete-tree`` to the command that
 regenerates the module files to instruct it to delete the existing tree and regenerate
@@ -191,11 +277,14 @@ you can use whitelist:
 generate the modules again:
 
 .. code-block:: console
+
   $ spack module refresh --module-type tcl -y
+  ==> Regenerating tcl module files
 
 You'll see that now the module for ``gcc@6.2.0`` has reappeared.
 
 .. code-block:: console
+
   $ module avail gcc-6.2.0-gcc-4.9.3-3wm2efx
   ---------------- /global/homes/m/mamelara/spack/share/spack/modules/cray-CNL-haswell ----------------
   gcc-6.2.0-gcc-4.9.3-3wm2efx
@@ -280,7 +369,16 @@ Regenerating module files now we obtain:
   $ spack module refresh --module-type tcl --delete-tree -y
   ==> Regenerating tcl module files
   $ module avail
-  ADD OUTPUT
+  ----------- /global/homes/m/mamelara/spack_tutorial/share/spack/modules/cray-CNL-haswell/ -----------
+  cmake-3.7.1-gcc-6.2.0                             netlib-scalapack-2.0.2-gcc-6.2.0-netlib-mpich
+  gcc-6.2.0-gcc-4.9.3                               netlib-scalapack-2.0.2-gcc-6.2.0-netlib-openmpi
+  hwloc-1.11.4-gcc-6.2.0                            netlib-scalapack-2.0.2-gcc-6.2.0-openblas-mpich
+  libpciaccess-0.13.4-gcc-6.2.0                     netlib-scalapack-2.0.2-gcc-6.2.0-openblas-openmpi
+  libsigsegv-2.10-gcc-6.2.0                         openblas-0.2.19-gcc-6.2.0
+  libtool-2.4.6-gcc-6.2.0                           openmpi-2.0.1-gcc-6.2.0
+  m4-1.4.17-gcc-6.2.0                               openssl-1.0.2j-gcc-6.2.0
+  ncurses-6.0-gcc-6.2.0                             util-macros-1.19.0-gcc-6.2.0
+  netlib-lapack-3.6.1-gcc-6.2.0                     zlib-1.2.8-gcc-6.2.0
 
 Finally we can set a ``naming_scheme`` to prevent users from loading
 modules that refer to different flavors of the same library/application:
@@ -313,8 +411,21 @@ The final result should look like:
 
 .. code-block:: console
 
+  $ spack module refresh --module-type tcl --delete-tree -y
+  ==> Regenerating tcl module files
+
   $ module avail
-  ADD OUTPUT
+
+  ----------- /global/homes/m/mamelara/spack_tutorial/share/spack/modules/cray-CNL-haswell/ -----------
+  cmake/3.7.1-gcc-6.2.0                             netlib-scalapack/2.0.2-gcc-6.2.0-netlib-mpich
+  gcc/6.2.0-gcc-4.9.3                               netlib-scalapack/2.0.2-gcc-6.2.0-netlib-openmpi
+  hwloc/1.11.4-gcc-6.2.0                            netlib-scalapack/2.0.2-gcc-6.2.0-openblas-mpich
+  libpciaccess/0.13.4-gcc-6.2.0                     netlib-scalapack/2.0.2-gcc-6.2.0-openblas-openmpi
+  libsigsegv/2.10-gcc-6.2.0                         openblas/0.2.19-gcc-6.2.0
+  libtool/2.4.6-gcc-6.2.0                           openmpi/2.0.1-gcc-6.2.0
+  m4/1.4.17-gcc-6.2.0                               openssl/1.0.2j-gcc-6.2.0
+  ncurses/6.0-gcc-6.2.0                             util-macros/1.19.0-gcc-6.2.0
+  netlib-lapack/3.6.1-gcc-6.2.0                     zlib/1.2.8-gcc-6.2.0
 
 .. note::
   TCL specific directive
@@ -365,7 +476,7 @@ documentation for the complete list).
 Regenerating the module files should result in something like:
 
 .. code-block:: console
-  :emphasize-lines: 14
+  :emphasize-lines: 13
 
   $ spack module refresh -y --module-type tcl
   ==> Regenerating tcl module files
