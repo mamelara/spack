@@ -13,10 +13,9 @@ manages compilers, especially as it relates to using Spack-built
 compilers within Spack. We will include full output from all of the
 commands demonstrated, although we will frequently call attention to only
 small portions of that output (or merely to the fact that it
-succeeded). The provided output is all from a cluster running Red Hat
-Enterprise Linux.
+succeeded).
 
-.. _note:
+.. note::
   For NERSC, we will be running this on Cori. 
   In order to avoid clogging up the login nodes it is VERY IMPORTANT that 
   you add -j2 or anything that does not use all 32 cores. Spack can get greedy 
