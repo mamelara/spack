@@ -57,7 +57,7 @@ schema = {
                             'items': {'type': 'string'}},  # compiler specs
                         'buildable': {
                             'type':  'boolean',
-                            'default': True,
+                            'default': False,
                         },
                         'modules': {
                             'type': 'object',
