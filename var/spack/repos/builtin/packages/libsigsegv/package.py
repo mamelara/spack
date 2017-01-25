@@ -34,6 +34,11 @@ class Libsigsegv(AutotoolsPackage):
     patch('patch.new_config_guess', when='@2.10')
 
     version('2.10', '7f96fb1f65b3b8cbc1582fb7be774f0f')
+    variant("shared", default=True, description="Enable shared library")
 
     def configure_args(self):
-        return ['--enable-shared']
+        if "+shared" in self.spec:
+            return ["--enable-shared"]
+        return []
+
+
