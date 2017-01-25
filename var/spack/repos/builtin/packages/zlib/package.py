@@ -40,7 +40,7 @@ class Zlib(AutotoolsPackage):
 
     variant('pic', default=True,
             description='Produce position-independent code (for shared libs)')
-    variant('shared', default=True,
+    variant('shared', default=False,
             description='Enables the build of shared libraries.')
 
     def setup_environment(self, spack_env, run_env):

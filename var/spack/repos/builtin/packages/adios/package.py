@@ -55,6 +55,7 @@ class Adios(Package):
     variant('szip', default=False, description='Enable szip transform support')
     # transports and serial file converters
     variant('hdf5', default=False, description='Enable parallel HDF5 transport and serial bp2h5 converter')
+    variant('netcdf', default=False, description="Enable NetCDF-4 library")
 
     # Lots of setting up here for this package
     # module swap PrgEnv-intel PrgEnv-$COMP
@@ -73,6 +74,7 @@ class Adios(Package):
     depends_on('szip', when='+szip')
     # optional transports & file converters
     depends_on('hdf5@1.8:+mpi', when='+hdf5')
+    depends_on("netcdf", when="+netcdf")
 
     # Fix ADIOS <=1.10.0 compile error on HDF5 1.10+
     #   https://github.com/ornladios/ADIOS/commit/3b21a8a41509
@@ -87,6 +89,9 @@ class Adios(Package):
         """
         if '+fortran' in spec and not self.compiler.fc:
             msg = 'cannot build a fortran variant without a fortran compiler'
+            raise RuntimeError(msg)
+        elif "+netcdf" in spec and not "+hdf5":
+            msg = "parallel netcdf requires parallel hdf5 enabled"
             raise RuntimeError(msg)
 
     def install(self, spec, prefix):
@@ -121,6 +126,8 @@ class Adios(Package):
             extra_args.append('--with-szip=%s' % spec['szip'].prefix)
         if '+hdf5' in spec:
             extra_args.append('--with-phdf5=%s' % spec['hdf5'].prefix)
+        if "+netcdf" in spec:
+            extra_args.append("--with-nc4par=%s" % spec["netcdf"].prefix)
 
         sh = which('sh')
         sh('./autogen.sh')
