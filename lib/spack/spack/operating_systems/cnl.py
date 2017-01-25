@@ -22,8 +22,10 @@
 # License along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 ##############################################################################
+import os
 import re
 
+from llnl.util.filesystem import join_path
 from spack.architecture import OperatingSystem
 from spack.util.executable import *
 import spack.spec
@@ -70,12 +72,21 @@ class Cnl(OperatingSystem):
                 'avail', cmp_cls.PrgEnv_compiler, output=str, error=str)
             version_regex = r'(%s)/([\d\.]+[\d])' % cmp_cls.PrgEnv_compiler
             matches = re.findall(version_regex, output)
+
+            craype_prefix = os.environ.get("CRAYPE_DIR", "")
+            if craype_prefix:
+                compiler_root = join_path(craype_prefix, 'bin')
+            else:
+                compiler_root = ""
             for name, version in matches:
                 v = version
+
+                compiler_paths = [join_path(compiler_root, ctype)
+                                  for ctype in ('cc', 'CC', 'ftn')]
                 comp = cmp_cls(
                     spack.spec.CompilerSpec(name + '@' + v),
                     self, "any",
-                    ['cc', 'CC', 'ftn'], [cmp_cls.PrgEnv, name + '/' + v])
+                    compiler_paths, [cmp_cls.PrgEnv, name + '/' + v])
 
                 compilers.append(comp)
 

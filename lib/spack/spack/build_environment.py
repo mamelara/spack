@@ -63,6 +63,7 @@ import llnl.util.tty as tty
 from llnl.util.filesystem import *
 
 import spack
+import spack.architecture
 import spack.store
 from spack.environment import EnvironmentModifications, validate
 from spack.util.environment import *
@@ -135,11 +136,21 @@ def load_module(mod):
     text = modulecmd('show', mod, output=str, error=str).split()
     for i, word in enumerate(text):
         if word == 'conflict':
-            exec(compile(modulecmd('unload', text[i + 1], output=str,
-                                   error=str), '<string>', 'exec'))
+            unload_module(text[i + 1], modulecmd)
     # Load the module now that there are no conflicts
     load = modulecmd('load', mod, output=str, error=str)
     exec(compile(load, '<string>', 'exec'))
+
+
+def unload_module(name_of_module, modulecmd=None):
+    """Given a name unload the module from modules environment """
+    # TODO: Change to account for modulecmd not found in $PATH
+    # On some systems. Also refactor to keep DRYness
+    if not modulecmd:
+        modulecmd = which("modulecmd")
+        modulecmd.add_default_arg("python")
+    exec(compile(modulecmd("unload", name_of_module, output=str,
+                           error=str), '<string>', 'exec'))
 
 
 def get_path_from_module(mod):
@@ -162,20 +173,20 @@ def get_path_from_module(mod):
     for line in text:
         rpath = line.find('-rpath/')
         if rpath >= 0:
-            return line[rpath + 6:line.find('/lib')]
+            return line[rpath + 6:line.rfind('/lib')]
 
     # If it lists a -L instruction, use that
     for line in text:
         L = line.find('-L/')
         if L >= 0:
-            return line[L + 2:line.find('/lib')]
+            return line[L + 2:line.rfind('/lib')]
 
     # If it sets the LD_LIBRARY_PATH or CRAY_LD_LIBRARY_PATH, use that
     for line in text:
         if line.find('LD_LIBRARY_PATH') >= 0:
             words = line.split()
             path = words[2]
-            return path[:path.find('/lib')]
+            return path[:path.rfind('/lib')]
     # Unable to find module path
     return None
 
@@ -466,6 +477,10 @@ def load_external_modules(pkg):
         if dep.external_module:
             load_module(dep.external_module)
 
+def unload_cray_modules():
+    """ Unload cray modules that could cause conflictions with linking.
+    (i.e cray-libsci for blas and lapack packages)"""
+    unload_module("cray-libsci")
 
 def setup_package(pkg, dirty=False):
     """Execute all environment setup routines."""
@@ -492,6 +507,8 @@ def setup_package(pkg, dirty=False):
     set_compiler_environment_variables(pkg, spack_env)
     set_build_environment_variables(pkg, spack_env, dirty)
     pkg.architecture.platform.setup_platform_environment(pkg, spack_env)
+    if "cray" in spack.architecture.sys_type():
+        unload_cray_modules()
     load_external_modules(pkg)
     # traverse in postorder so package can use vars from its dependencies
     spec = pkg.spec

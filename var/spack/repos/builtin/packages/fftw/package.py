@@ -42,6 +42,9 @@ class Fftw(Package):
     patch('pfft-3.3.5.patch', when="@3.3.5+pfft_patches", level=0)
     patch('pfft-3.3.4.patch', when="@3.3.4+pfft_patches", level=0)
 
+    variant("shared",
+            default=True,
+            description="shared libraries")
     variant(
         'float', default=True,
         description='Produces a single precision version of the library')
@@ -67,8 +70,8 @@ class Fftw(Package):
 
     def install(self, spec, prefix):
         options = [
+            'CC=%s' % spack_cc,
             '--prefix={0}'.format(prefix),
-            '--enable-shared',
             '--enable-threads'
         ]
 
@@ -84,11 +87,11 @@ class Fftw(Package):
             options.append("--disable-fortran")
         if '+mpi' in spec:
             options.append('--enable-mpi')
-
+        if "+shared" in spec:
+            options.append("--enable-shared")
         if '+pfft_patches' in spec:
             autoreconf = which('autoreconf')
             autoreconf('-ifv')
-
         configure(*options)
         make()
         if self.run_tests:

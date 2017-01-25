@@ -34,14 +34,13 @@ class Espresso(Package):
     """
 
     homepage = 'http://quantum-espresso.org'
-    url = 'http://www.qe-forge.org/gf/download/frsrelease/204/912/espresso-5.3.0.tar.gz'
+    url = "http://qe-forge.org/gf/download/frsrelease/224/1044/qe-6.0.tar.gz"
 
-    version(
-        '5.4.0',
-        '8bb78181b39bd084ae5cb7a512c1cfe7',
-        url='http://www.qe-forge.org/gf/download/frsrelease/211/968/espresso-5.4.0.tar.gz'
-    )
-    version('5.3.0', '6848fcfaeb118587d6be36bd10b7f2c3')
+    version('6.0', "e42aeeffadf7951542d8561a6b4a3390")
+    version('5.4.0', '8bb78181b39bd084ae5cb7a512c1cfe7',
+            url='http://www.qe-forge.org/gf/download/frsrelease/211/968/espresso-5.4.0.tar.gz')
+    version('5.3.0', '6848fcfaeb118587d6be36bd10b7f2c3',
+            url='http://www.qe-forge.org/gf/download/frsrelease/204/912/espresso-5.3.0.tar.gz')
 
     variant('mpi', default=True, description='Builds with mpi support')
     variant('openmp', default=False, description='Enables openMP support')
@@ -83,19 +82,11 @@ class Espresso(Package):
         if '+scalapack' in spec:
             options.append('--with-scalapack=yes')
 
-        if '+elpa' in spec:
-            options.append('--with-elpa=yes')
-
         # Add a list of directories to search
-        search_list = []
-        for dependency_spec in spec.dependencies():
-            search_list.extend([dependency_spec.prefix.lib,
-                                dependency_spec.prefix.lib64])
-
-        search_list = " ".join(search_list)
-        options.append('LIBDIRS=%s' % search_list)
+        if spec.satisfies("platform=cray"):
+            options.append("ARCH=crayxt")
+        options.append('LIBDIRS=%s %s' % (self.spec["blas"].blas_libs, self.spec["lapack"].lapack_libs))
         options.append('F90=%s' % os.environ['FC'])
-
         configure(*options)
         make('all')
 
