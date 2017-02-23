@@ -25,6 +25,7 @@
 import re
 
 from spack.architecture import OperatingSystem
+from spack.build_environment import get_modulecmd
 from spack.util.executable import *
 import spack.spec
 from spack.util.multiproc import parmap
@@ -39,13 +40,21 @@ class Cnl(OperatingSystem):
     updated to indicate that OS has been upgraded (or downgraded)
     """
 
+    def detect_crayos_version(self):
+        modulecmd = get_modulecmd()
+        output = modulecmd("avail", "PrgEnv-gnu", output=str, error=str)
+        matches = re.findall(r'PrgEnv-gnu/(\d+).\d+.\d+', output)
+        version_set = set(matches)
+        recent_version = max(version_set)
+        return recent_version
+
     def __init__(self):
-        name = 'CNL'
-        version = '10'
+        name = 'cnl'
+        version = self.detect_crayos_version()
         super(Cnl, self).__init__(name, version)
 
     def __str__(self):
-        return self.name
+        return self.name + self.version
 
     def find_compilers(self, *paths):
         types = spack.compilers.all_compiler_types()
@@ -63,8 +72,7 @@ class Cnl(OperatingSystem):
             if not cmp_cls.PrgEnv_compiler:
                 tty.die('Must supply PrgEnv_compiler with PrgEnv')
 
-            modulecmd = which('modulecmd')
-            modulecmd.add_default_arg('python')
+            modulecmd = get_modulecmd()
 
             output = modulecmd(
                 'avail', cmp_cls.PrgEnv_compiler, output=str, error=str)
