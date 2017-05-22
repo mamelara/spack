@@ -6,7 +6,10 @@ import llnl.util.filesystem
 from llnl.util.lang import key_ordering
 import llnl.util.tty as tty
 import spack.architecture
+<<<<<<< HEAD
 from spack.package_prefs import VirtualInPackagesYAMLError
+=======
+>>>>>>> 67cd029d6a552b4e979c20bcb0f01e5314d5d8c6
 from spack.util.spack_yaml import syaml_dict
 import spack.util.executable
 import spack.spec
@@ -19,7 +22,11 @@ class PackageConfigEntry(object):
         {buildable: T or F,
          paths|modules:
              { spec1: path or module name,
+<<<<<<< HEAD
                spec2: path or module name }
+=======
+               spec2: path or module name}}
+>>>>>>> 67cd029d6a552b4e979c20bcb0f01e5314d5d8c6
 
     Attributes:
         package_name: string name of the package
@@ -119,6 +126,7 @@ class PackagesConfig(object):
         Scope is a string that can be either site/user/defaults.
         """
         self.scope = scope
+<<<<<<< HEAD
         config = spack.config.get_config("packages", scope)
         virtuals = [(pkg_name, pkg_name._start_mark) for pkg_name in config
                     if spack.repo.is_virtual(pkg_name)]
@@ -128,6 +136,9 @@ class PackagesConfig(object):
                     "packages.yaml entries cannot be virtual packages:",
                     '\n'.join(errors))
         self.packages_config = config
+=======
+        self.packages_config = spack.config.get_config("packages", scope)
+>>>>>>> 67cd029d6a552b4e979c20bcb0f01e5314d5d8c6
 
     def get_package(self, package_name):
         """Given a package name, return a PackageConfigEntry object.
@@ -564,6 +575,7 @@ def add_external_package(external_package, scope):
     else:
         tty.msg("Added no new external packages")
 
+<<<<<<< HEAD
 def remove_external_package(package_spec, scope):
     """Remove the external package specified by the external package spec"""
     packages_config = ext_package.PackagesConfig(scope)
@@ -593,6 +605,8 @@ def remove_external_package(package_spec, scope):
         packages_config.update_package_config(package.config_entry())
 
     return matches
+=======
+>>>>>>> 67cd029d6a552b4e979c20bcb0f01e5314d5d8c6
 
 class PackageSpecInsufficientlySpecificError(spack.error.SpackError):
     def __init__(self, package_spec):

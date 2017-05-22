@@ -28,7 +28,6 @@ import os
 import re
 import shutil
 from six import StringIO
-import tempfile
 
 import llnl.util.filesystem
 import llnl.util.lang
