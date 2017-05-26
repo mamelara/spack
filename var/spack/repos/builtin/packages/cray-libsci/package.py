@@ -37,6 +37,7 @@
 # If you submit this package back to Spack as a pull request,
 # please first remove this boilerplate and all FIXME comments.
 #
+from llnl.util.filesystem import LibraryList
 from spack import *
 
 
@@ -55,15 +56,15 @@ class CrayLibsci(Package):
 
     @property
     def blas_libs(self):
-        return []
+        return LibraryList([self.prefix.lib])
 
     @property
     def lapack_libs(self):
-        return []
+        return
 
     @property
     def scalapack_libs(self):
-        return []
+        return
 
     def install(self, spec, prefix):
         raise NoBuildError(spec) # Package should not be built. Vendor provided
