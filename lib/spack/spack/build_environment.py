@@ -103,6 +103,21 @@ SPACK_DEBUG_LOG_DIR = 'SPACK_DEBUG_LOG_DIR'
 # Platform-specific library suffix.
 dso_suffix = 'dylib' if sys.platform == 'darwin' else 'so'
 
+class FrontEndEnvironment(object):
+
+    def __init__(self, arch):
+        platform = arch.platform
+        self.__frontend_target = platform.target("frontend").module_name
+        self.__current_target = arch.target.module_name
+
+    def __enter__(self):
+        tty.msg("Loading {}".format(self.__current_target))
+        return load_module(self.__frontend_target)
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        tty.msg("Loading {}".format(self.__current_target))
+        return load_module(self.__current_target)
+
 
 class MakeExecutable(Executable):
     """Special callable executable object for make so the user can
@@ -128,6 +143,22 @@ class MakeExecutable(Executable):
             args = (jobs,) + args
 
         return super(MakeExecutable, self).__call__(*args, **kwargs)
+
+
+class ConfigureExecutable(Executable):
+
+    def __init__(self, name, arch):
+        super(ConfigureExecutable, self).__init__(name)
+        self.arch = arch
+
+    def __call__(self, *args, **kwargs):
+        if str(self.arch) != spack.architecture.front_end_sys_type():
+            with FrontEndEnvironment(self.arch):
+                result = super(ConfigureExecutable, self).__call__(*args,
+                                                                   **kwargs)
+                return result
+        else:
+            return super(ConfigureExecutable, self).__call__(*args, **kwargs)
 
 
 def set_compiler_environment_variables(pkg, env):
@@ -370,7 +401,7 @@ def set_module_variables_for_package(pkg, module):
 
     # Find the configure script in the archive path
     # Don't use which for this; we want to find it in the current dir.
-    m.configure = Executable('./configure')
+    m.configure = ConfigureExecutable('./configure', pkg.architecture)
 
     m.cmake = Executable('cmake')
     m.ctest = Executable('ctest')
