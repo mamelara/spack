@@ -35,7 +35,6 @@ import llnl.util.tty as tty
 from llnl.util.filesystem import working_dir, force_remove
 from spack.package import PackageBase, run_after, run_before
 from spack.build_environment import ConfigureExecutable
-from spack.util.executable import Executable
 
 
 class AutotoolsPackage(PackageBase):

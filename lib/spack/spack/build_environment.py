@@ -103,6 +103,7 @@ SPACK_DEBUG_LOG_DIR = 'SPACK_DEBUG_LOG_DIR'
 # Platform-specific library suffix.
 dso_suffix = 'dylib' if sys.platform == 'darwin' else 'so'
 
+
 class FrontEndEnvironment(object):
 
     def __init__(self, arch):
