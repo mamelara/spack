@@ -499,6 +499,16 @@ def platform():
 
 
 @memoized
+def front_end_sys_type():
+    """Print out the front end platform-os-target tuple for this machine.
+    This should output the same as sys_type if the architecture is the same
+    for both the login and compute nodes or on any commodity type of arch.
+    """
+    arch = Arch(platform(), "frontend", "frontend")
+    return str(arch)
+
+
+@memoized
 def sys_type():
     """Print out the "default" platform-os-target tuple for this machine.
 
