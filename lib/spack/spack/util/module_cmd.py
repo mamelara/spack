@@ -205,7 +205,7 @@ def get_path_from_module(mod):
             return path[:path.find('/bin')]
 
     # Unable to find module path
-    return None
+    return ""
 
 
 class ModuleError(Exception):

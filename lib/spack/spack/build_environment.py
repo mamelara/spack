@@ -517,10 +517,10 @@ def get_rpaths(pkg):
                   if os.path.isdir(d.prefix.lib))
     rpaths.extend(d.prefix.lib64 for d in deps
                   if os.path.isdir(d.prefix.lib64))
-    # Second module is our compiler mod name. We use that to get rpaths from
-    # module show output.
+
     if pkg.compiler.modules and len(pkg.compiler.modules) > 1:
-        rpaths.append(get_path_from_module(pkg.compiler.modules[1]))
+        for module_name in pkg.compiler.modules:
+            rpaths.append(get_path_from_module(module_name))
     return rpaths
 
 
