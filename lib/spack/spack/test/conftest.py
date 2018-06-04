@@ -34,6 +34,7 @@ import pytest
 from llnl.util.filesystem import remove_linked_tree
 
 import spack.architecture
+import spack.build_environment
 import spack.config
 import spack.caches
 import spack.database
@@ -358,6 +359,24 @@ def mock_fetch(mock_archive):
     PackageBase.fetcher = orig_fn
 
 
+class MockFrontEndEnvironment(spack.build_environment.FrontEndEnvironment):
+    """
+    Mock the context manager that loads the frontend target. For tests
+    most don't need this capability and so we want this to do nothing.
+    Explicit tests for this feature will not be using the mockup.
+    """
+
+    def __enter__(self):
+        return
+
+    def __exit__(self, exception_type, exception_value, traceback):
+        return
+
+
+@pytest.fixture(autouse=True)
+def no_context_manager(monkeypatch):
+    monkeypatch.setattr("spack.build_environment.FrontEndEnvironment",
+                        MockFrontEndEnvironment)
 ##########
 # Fake archives and repositories
 ##########
