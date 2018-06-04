@@ -112,11 +112,11 @@ class FrontEndEnvironment(object):
         self.__current_target = arch.target.module_name
 
     def __enter__(self):
-        tty.msg("Loading {}".format(self.__current_target))
+        tty.debug("Loading {}".format(self.__current_target))
         return load_module(self.__frontend_target)
 
     def __exit__(self, exception_type, exception_value, traceback):
-        tty.msg("Loading {}".format(self.__current_target))
+        tty.debug("Loading {}".format(self.__current_target))
         return load_module(self.__current_target)
 
 
