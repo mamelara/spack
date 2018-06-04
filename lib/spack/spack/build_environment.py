@@ -148,13 +148,13 @@ class MakeExecutable(Executable):
 
 class ConfigureExecutable(Executable):
 
-    def __init__(self, name, arch):
+    def __init__(self, name, pkg):
         super(ConfigureExecutable, self).__init__(name)
-        self.arch = arch
+        self.pkg = pkg
 
     def __call__(self, *args, **kwargs):
-        if str(self.arch) != spack.architecture.front_end_sys_type():
-            with FrontEndEnvironment(self.arch):
+        if str(self.pkg.architecture) != spack.architecture.front_end_sys_type():
+            with FrontEndEnvironment(self.pkg.architecture):
                 result = super(ConfigureExecutable, self).__call__(*args,
                                                                    **kwargs)
                 return result
@@ -402,7 +402,7 @@ def set_module_variables_for_package(pkg, module):
 
     # Find the configure script in the archive path
     # Don't use which for this; we want to find it in the current dir.
-    m.configure = ConfigureExecutable('./configure', pkg.architecture)
+    m.configure = ConfigureExecutable('./configure', pkg)
 
     m.cmake = Executable('cmake')
     m.ctest = Executable('ctest')

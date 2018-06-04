@@ -241,7 +241,7 @@ class AutotoolsPackage(PackageBase):
 
         # Monkey-patch the configure script in the corresponding module
         inspect.getmodule(self).configure = ConfigureExecutable(
-            self.configure_abs_path, self.architecture
+            self.configure_abs_path, self
         )
 
     def configure_args(self):
