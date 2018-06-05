@@ -153,7 +153,8 @@ class ConfigureExecutable(Executable):
         self.pkg = pkg
 
     def __call__(self, *args, **kwargs):
-        if str(self.pkg.architecture) != spack.architecture.front_end_sys_type():
+        front_end = spack.architecture.front_end_sys_type()
+        if str(self.pkg.architecture) != front_end:
             with FrontEndEnvironment(self.pkg.architecture):
                 result = super(ConfigureExecutable, self).__call__(*args,
                                                                    **kwargs)
