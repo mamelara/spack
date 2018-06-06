@@ -51,6 +51,7 @@ There are two parts to the build environment:
 Skimming this module is a nice way to get acquainted with the types of
 calls you can make from within the install() function.
 """
+from contextlib import contextmanager
 import inspect
 import multiprocessing
 import os
@@ -74,9 +75,7 @@ from spack.environment import EnvironmentModifications, validate
 from spack.environment import preserve_environment
 from spack.util.environment import env_flag, filter_system_paths, get_path
 from spack.util.executable import Executable
-from spack.util.module_cmd import (load_module,
-                                   get_path_from_module,
-                                   ModuleError)
+from spack.util.module_cmd import load_module, get_path_from_module
 from spack.util.log_parse import parse_log_events, make_log_context
 
 
@@ -106,24 +105,11 @@ SPACK_DEBUG_LOG_DIR = 'SPACK_DEBUG_LOG_DIR'
 dso_suffix = 'dylib' if sys.platform == 'darwin' else 'so'
 
 
-class FrontEndEnvironment(object):
-
-    def __init__(self, arch):
-        platform = arch.platform
-        self.__frontend_target = platform.target("frontend").module_name
-        self.__current_target = arch.target.module_name
-
-    def __enter__(self):
-        """Attempt to load a front end target module. If there is no
-        module cmd available this will do nothing"""
-        tty.debug("Loading %s" % self.__current_target)
-        return load_module(self.__frontend_target)
-
-    def __exit__(self, exception_type, exception_value, traceback):
-        """Attempt to load back the original module. If there is no module
-        cmd available this will do nothing"""
-        tty.debug("Loading %s" % self.__current_target)
-        return load_module(self.__current_target)
+@contextmanager
+def swap_to_frontend(frontend, backend):
+    load_module(frontend)
+    yield
+    load_module(backend)
 
 
 class MakeExecutable(Executable):
@@ -159,10 +145,15 @@ class ConfigureExecutable(Executable):
         self.pkg = pkg
 
     def __call__(self, *args, **kwargs):
+
         front_end = spack.architecture.front_end_sys_type()
-        if (str(self.pkg.architecture.platform) == "cray" and
-                str(self.pkg.architecture) != front_end):
-            with FrontEndEnvironment(self.pkg.architecture):
+        platform = self.pkg.architecture.platform
+        frontend_target = platform.target("frontend").module_name
+        backend_target = self.pkg.architecture.target.module_name
+
+        if str(self.pkg.architecture) != front_end and (frontend_target and
+                                                        backend_target):
+            with swap_to_frontend(frontend_target, backend_target):
                 result = super(ConfigureExecutable, self).__call__(*args,
                                                                    **kwargs)
                 return result
