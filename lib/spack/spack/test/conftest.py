@@ -34,7 +34,6 @@ import pytest
 from llnl.util.filesystem import remove_linked_tree
 
 import spack.architecture
-import spack.build_environment
 import spack.config
 import spack.caches
 import spack.database
