@@ -25,11 +25,13 @@
 """ Test checks if the architecture class is created correctly and also that
     the functions are looking for the correct architecture name
 """
+import pytest
 import itertools
 import os
 import platform as py_platform
 
 import spack.architecture
+import spack.build_environment
 from spack.spec import Spec
 from spack.platforms.cray import Cray
 from spack.platforms.linux import Linux
@@ -159,3 +161,23 @@ def test_user_input_combination(config):
         )
     res = all(results)
     assert res
+
+
+def test_swapping_to_frontend_environment(config, mock_configure, monkeypatch):
+
+    spec = Spec("mpileaks")
+    spec.concretize()
+
+    def mock_load_module(mod):
+        os.environ["MODULE_LOADED"] = "frontend"
+
+    package = spack.repo.get(spec)
+
+    configure = spack.build_environment.ConfigureExecutable("configure",
+                                                            package)
+
+    monkeypatch.setattr(spack.util.module_cmd,
+                        "load_module",
+                        mock_load_module)
+    configure()
+    assert os.environ["MODULE_LOADED"] == "frontend"
