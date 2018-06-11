@@ -75,7 +75,7 @@ from spack.environment import EnvironmentModifications, validate
 from spack.environment import preserve_environment
 from spack.util.environment import env_flag, filter_system_paths, get_path
 from spack.util.executable import Executable
-from spack.util.module_cmd import load_module, get_path_from_module
+import spack.util.module_cmd
 from spack.util.log_parse import parse_log_events, make_log_context
 
 
@@ -107,9 +107,15 @@ dso_suffix = 'dylib' if sys.platform == 'darwin' else 'so'
 
 @contextmanager
 def swap_to_frontend(frontend, backend):
-    load_module(frontend)
+    """A context manager that swaps the backend target architecture module
+    to the frontend architecture module and then back. This enables us to use
+    a frontend environment whenever we attempt to cross compile and run
+    configure tests"""
+    tty.debug("Swapping module from %s to %s" % (backend, frontend))
+    spack.util.module_cmd.load_module(frontend)
     yield
-    load_module(backend)
+    tty.debug("Swapping back from %s to %s" % (frontend, backend))
+    spack.util.module_cmd.load_module(backend)
 
 
 class MakeExecutable(Executable):
@@ -139,6 +145,13 @@ class MakeExecutable(Executable):
 
 
 class ConfigureExecutable(Executable):
+    """Special callable executable object for configure that uses a context
+    manager to swap between frontend and backend target modules. The context
+    manager should only affect platforms that have different architectures
+    on both login and compute nodes. On platforms that have a single
+    architecture (e.g Darwin, Linux), the configure executable works as
+    usual.
+    """
 
     def __init__(self, name, pkg):
         super(ConfigureExecutable, self).__init__(name)
@@ -556,7 +569,8 @@ def get_rpaths(pkg):
     # Second module is our compiler mod name. We use that to get rpaths from
     # module show output.
     if pkg.compiler.modules and len(pkg.compiler.modules) > 1:
-        rpaths.append(get_path_from_module(pkg.compiler.modules[1]))
+        rpaths.append(spack.util.module_cmd.get_path_from_module(
+            pkg.compiler.modules[1]))
     return rpaths
 
 
