@@ -26,6 +26,7 @@ import collections
 import copy
 import os
 import shutil
+import tempfile
 import re
 
 import py
@@ -43,6 +44,7 @@ import spack.platforms.test
 import spack.repo
 import spack.stage
 import spack.util.ordereddict
+from spack.util.environment import path_put_first
 import spack.util.executable
 import spack.util.pattern
 from spack.dependency import Dependency
@@ -683,3 +685,29 @@ def invalid_spec(request):
     """Specs that do not parse cleanly due to invalid formatting.
     """
     return request.param
+
+#######
+# Mock Configure executable
+#######
+@pytest.fixture(scope="function")
+def mock_configure():
+    """Create a mock configure in a directory"""
+    tmpdir = tempfile.mkdtemp()
+    configure_exe = os.path.join(tmpdir, "configure")
+    with open(configure_exe, "w") as file:
+        file.write("#!/bin/sh\n")
+        file.write("echo $@")
+    os.chmod(configure_exe, 0o700)
+
+    path_put_first("PATH", [tmpdir])
+
+    yield
+
+    shutil.rmtree(tmpdir)
+
+#########
+# Creating a variant of the Test platform
+########
+@pytest.fixture(scope="function")
+def heterogeneous_test_platform():
+    pass
