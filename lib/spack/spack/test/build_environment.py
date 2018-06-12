@@ -113,7 +113,7 @@ def test_cc_not_changed_by_modules(monkeypatch):
         os.environ['ANOTHER_VAR'] = 'THIS_IS_SET'
 
     monkeypatch.setattr(
-            spack.build_environment, 'load_module', _set_wrong_cc
+        spack.build_environment, 'load_module', _set_wrong_cc
     )
     monkeypatch.setattr(
         pkg.compiler, 'modules', ['some_module']
