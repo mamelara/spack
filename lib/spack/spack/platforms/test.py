@@ -48,7 +48,6 @@ class Test(Platform):
         self.add_operating_system(self.default_os, OS('debian', 6))
         self.add_operating_system(self.front_os, OS('redhat', 6))
 
-
     @classmethod
     def detect(self):
         return True

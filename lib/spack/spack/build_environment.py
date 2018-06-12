@@ -617,7 +617,7 @@ def load_external_modules(pkg):
     """
     for dep in list(pkg.spec.traverse()):
         if dep.external_module:
-            load_module(dep.external_module)
+            spack.util.module_cmd.load_module(dep.external_module)
 
 
 def setup_package(pkg, dirty):
