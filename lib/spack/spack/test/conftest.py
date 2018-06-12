@@ -707,11 +707,10 @@ def mock_configure():
 
     shutil.rmtree(tmpdir)
 
-#########
-# Creating a variant of the Test platform
-########
 
-
-@pytest.fixture(scope="function")
-def heterogeneous_test_platform():
-    pass
+@pytest.fixture(autouse=True)
+def mock_modulecmd(monkeypatch):
+    monkeypatch.setattr(spack.build_environment,
+                        "load_module",
+                        lambda mod: mod
+                        )
