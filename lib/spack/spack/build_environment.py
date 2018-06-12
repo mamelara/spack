@@ -75,7 +75,7 @@ from spack.environment import EnvironmentModifications, validate
 from spack.environment import preserve_environment
 from spack.util.environment import env_flag, filter_system_paths, get_path
 from spack.util.executable import Executable
-import spack.util.module_cmd
+from spack.util.module_cmd import load_module, get_path_from_module
 from spack.util.log_parse import parse_log_events, make_log_context
 
 
@@ -111,11 +111,9 @@ def swap_to_frontend(frontend, backend):
     to the frontend architecture module and then back. This enables us to use
     a frontend environment whenever we attempt to cross compile and run
     configure tests"""
-    tty.debug("Swapping module from %s to %s" % (backend, frontend))
-    spack.util.module_cmd.load_module(frontend)
+    load_module(frontend)
     yield
-    tty.debug("Swapping back from %s to %s" % (frontend, backend))
-    spack.util.module_cmd.load_module(backend)
+    load_module(backend)
 
 
 class MakeExecutable(Executable):
@@ -570,8 +568,7 @@ def get_rpaths(pkg):
     # Second module is our compiler mod name. We use that to get rpaths from
     # module show output.
     if pkg.compiler.modules and len(pkg.compiler.modules) > 1:
-        rpaths.append(spack.util.module_cmd.get_path_from_module(
-            pkg.compiler.modules[1]))
+        rpaths.append(get_path_from_module(pkg.compiler.modules[1]))
     return rpaths
 
 
@@ -618,7 +615,7 @@ def load_external_modules(pkg):
     """
     for dep in list(pkg.spec.traverse()):
         if dep.external_module:
-            spack.util.module_cmd.load_module(dep.external_module)
+            load_module(dep.external_module)
 
 
 def setup_package(pkg, dirty):
@@ -670,12 +667,11 @@ def setup_package(pkg, dirty):
         for mod in pkg.compiler.modules:
             # Fixes issue https://github.com/spack/spack/issues/3153
             if os.environ.get("CRAY_CPU_TARGET") == "mic-knl":
-                spack.util.module_cmd.load_module("cce")
-            spack.util.module_cmd.load_module(mod)
+                load_module("cce")
+            load_module(mod)
 
         if pkg.architecture.target.module_name:
-            spack.util.module_cmd.load_module(
-                pkg.architecture.target.module_name)
+            load_module(pkg.architecture.target.module_name)
 
         load_external_modules(pkg)
 
