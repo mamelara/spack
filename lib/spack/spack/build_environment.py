@@ -166,6 +166,7 @@ class ConfigureExecutable(Executable):
 
         if str(self.pkg.architecture) != front_end and (frontend_target and
                                                         backend_target):
+
             with swap_to_frontend(frontend_target, backend_target):
                 result = super(ConfigureExecutable, self).__call__(*args,
                                                                    **kwargs)
@@ -669,11 +670,12 @@ def setup_package(pkg, dirty):
         for mod in pkg.compiler.modules:
             # Fixes issue https://github.com/spack/spack/issues/3153
             if os.environ.get("CRAY_CPU_TARGET") == "mic-knl":
-                load_module("cce")
-            load_module(mod)
+                spack.util.module_cmd.load_module("cce")
+            spack.util.module_cmd.load_module(mod)
 
         if pkg.architecture.target.module_name:
-            load_module(pkg.architecture.target.module_name)
+            spack.util.module_cmd.load_module(
+                pkg.architecture.target.module_name)
 
         load_external_modules(pkg)
 
