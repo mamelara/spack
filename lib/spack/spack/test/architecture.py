@@ -175,7 +175,7 @@ def test_swapping_to_frontend_environment(config, mock_configure, monkeypatch):
     configure = spack.build_environment.ConfigureExecutable("configure",
                                                             package)
 
-    monkeypatch.setattr(spack.util.module_cmd,
+    monkeypatch.setattr(spack.build_environment,
                         "load_module",
                         mock_load_module)
     configure()
