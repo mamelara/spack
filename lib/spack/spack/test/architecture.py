@@ -25,7 +25,6 @@
 """ Test checks if the architecture class is created correctly and also that
     the functions are looking for the correct architecture name
 """
-import pytest
 import itertools
 import os
 import platform as py_platform

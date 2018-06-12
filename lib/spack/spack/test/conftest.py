@@ -689,6 +689,7 @@ def invalid_spec(request):
 #######
 # Mock Configure executable
 #######
+
 @pytest.fixture(scope="function")
 def mock_configure():
     """Create a mock configure in a directory"""
@@ -708,6 +709,7 @@ def mock_configure():
 #########
 # Creating a variant of the Test platform
 ########
+
 @pytest.fixture(scope="function")
 def heterogeneous_test_platform():
     pass
