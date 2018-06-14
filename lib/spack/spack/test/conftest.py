@@ -26,7 +26,6 @@ import collections
 import copy
 import os
 import shutil
-import tempfile
 import re
 
 import py
@@ -686,26 +685,40 @@ def invalid_spec(request):
     """
     return request.param
 
+
+#########
+# Environment
+########
+
+
+@pytest.fixture()
+def temp_env():
+    old_env = os.environ.copy()
+    yield
+    os.environ = old_env
+
+
 #######
 # Mock Configure executable
 #######
 
 
 @pytest.fixture(scope="function")
-def mock_configure():
+def mock_configure(tmpdir_factory, temp_env):
     """Create a mock configure in a directory"""
-    tmpdir = tempfile.mkdtemp()
-    configure_exe = os.path.join(tmpdir, "configure")
+
+    tmpdir = tmpdir_factory.mktemp("mock_configure_dir")
+    configure_exe = str(tmpdir.join("configure"))
+    print(configure_exe)
+
     with open(configure_exe, "w") as file:
         file.write("#!/bin/sh\n")
         file.write("echo $@")
-    os.chmod(configure_exe, 0o700)
 
-    path_put_first("PATH", [tmpdir])
+    os.chmod(configure_exe, 0o755)
+    path_put_first("PATH", [configure_exe])
 
-    yield
-
-    shutil.rmtree(tmpdir)
+    yield configure_exe
 
 
 @pytest.fixture(autouse=True)
