@@ -39,8 +39,9 @@ class Test(Platform):
     def __init__(self):
         super(Test, self).__init__('test')
 
-        default_target = Target(self.default, "x86_64")
-        front_end_target = Target(self.front_end, "x86_32")
+        default_target = Target(self.default, "/path/to/backend/modulefile")
+        front_end_target = Target(self.front_end,
+                                  "/path/to/frontend/modulefile")
 
         self.add_target(self.default, default_target)
         self.add_target(self.front_end, front_end_target)
