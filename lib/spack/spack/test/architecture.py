@@ -160,26 +160,3 @@ def test_user_input_combination(config):
         )
     res = all(results)
     assert res
-
-
-def test_swapping_to_frontend_environment(config, mock_configure, monkeypatch):
-    """Test swapping of frontend and backend modules when we are cross
-    compiling"""
-
-    def mock_load_module(mod):
-        os.environ["MODULE_LOADED"] = mod
-
-    monkeypatch.setattr(spack.build_environment,
-                        "load_module",
-                        mock_load_module)
-
-    spec = Spec("mpileaks")
-    spec.concretize()
-    package = spack.repo.get(spec)
-    configure = spack.build_environment.ConfigureExecutable(mock_configure,
-                                                            package)
-    swapped_frontend_module = configure(output=str)
-
-    # Expect that after we exit our context manager we are back to our
-    # backend module
-    assert os.environ["MODULE_LOADED"] != swapped_frontend_module

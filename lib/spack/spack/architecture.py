@@ -88,6 +88,7 @@ from spack.util.naming import mod_to_class
 from spack.util.environment import get_path
 from spack.util.multiproc import parmap
 from spack.util.spack_yaml import syaml_dict
+from spack.spec import ArchSpec
 
 
 class NoPlatformError(serr.SpackError):
@@ -499,7 +500,7 @@ def platform():
 
 
 @memoized
-def front_end_sys_type():
+def frontend_sys_type():
     """Print out the front end platform-os-target tuple for this machine.
     This should output the same as sys_type if the architecture is the same
     for both the login and compute nodes or on any commodity type of arch.
@@ -523,3 +524,11 @@ def sys_type():
     """
     arch = Arch(platform(), 'default_os', 'default_target')
     return str(arch)
+
+
+def frontend_arch_spec():
+    return ArchSpec(frontend_sys_type())
+
+
+def backend_arch_spec():
+    return ArchSpec(backend_sys_type())

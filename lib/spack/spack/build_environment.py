@@ -67,6 +67,7 @@ from llnl.util.tty.color import cescape, colorize
 from llnl.util.filesystem import mkdirp, install, install_tree
 
 import spack.build_systems.cmake
+import spack.compilers
 import spack.config
 import spack.main
 import spack.paths
@@ -105,16 +106,6 @@ SPACK_DEBUG_LOG_DIR = 'SPACK_DEBUG_LOG_DIR'
 dso_suffix = 'dylib' if sys.platform == 'darwin' else 'so'
 
 
-@contextmanager
-def swap_to_frontend(frontend, backend):
-    """A context manager that swaps the backend target architecture module
-    to the frontend architecture module and then back. This enables us to use
-    a frontend environment whenever we attempt to cross compile and run
-    configure tests"""
-    load_module(frontend)
-    yield
-    load_module(backend)
-
 
 class MakeExecutable(Executable):
     """Special callable executable object for make so the user can
@@ -140,37 +131,6 @@ class MakeExecutable(Executable):
             args = (jobs,) + args
 
         return super(MakeExecutable, self).__call__(*args, **kwargs)
-
-
-class ConfigureExecutable(Executable):
-    """Special callable executable object for configure that uses a context
-    manager to swap between frontend and backend target modules. The context
-    manager should only affect platforms that have different architectures
-    on both login and compute nodes. On platforms that have a single
-    architecture (e.g Darwin, Linux), the configure executable works as
-    usual.
-    """
-
-    def __init__(self, name, pkg):
-        super(ConfigureExecutable, self).__init__(name)
-        self.pkg = pkg
-
-    def __call__(self, *args, **kwargs):
-
-        front_end = spack.architecture.front_end_sys_type()
-        platform = self.pkg.architecture.platform
-        frontend_target = platform.target("frontend").module_name
-        backend_target = self.pkg.architecture.target.module_name
-
-        if str(self.pkg.architecture) != front_end and (frontend_target and
-                                                        backend_target):
-
-            with swap_to_frontend(frontend_target, backend_target):
-                result = super(ConfigureExecutable, self).__call__(*args,
-                                                                   **kwargs)
-                return result
-        else:
-            return super(ConfigureExecutable, self).__call__(*args, **kwargs)
 
 
 def set_compiler_environment_variables(pkg, env):
@@ -200,6 +160,8 @@ def set_compiler_environment_variables(pkg, env):
     if compiler.fc:
         env.set('SPACK_FC',  compiler.fc)
         env.set('FC', os.path.join(link_dir, compiler.link_paths['fc']))
+
+    return env
 
     # Set SPACK compiler rpath flags so that our wrapper knows what to use
     env.set('SPACK_CC_RPATH_ARG',  compiler.cc_rpath_arg)
@@ -247,6 +209,28 @@ def set_compiler_environment_variables(pkg, env):
     compiler.setup_custom_environment(pkg, env)
 
     return env
+
+
+def build_env_compilers(pkg, env):
+
+    @contextmanager
+    def _build_env_compilers():
+        """A context manager that swaps the backend target architecture module
+        to the frontend architecture module and then back. This enables us
+        to use a frontend environment whenever we attempt to cross compile and
+        run configure tests"""
+
+        original_compiler = pkg.compiler
+        frontend_arch = frontend_arch_spec()
+        frontend_compilers = spack.compilers.compilers_for_arch(frontend_arch)
+        compiler = filter_compilers(front_compilers, pkg.compiler)
+        setattr(pkg, 'compiler', compiler)
+        set_compiler_environment_variables(pkg, env)
+        yield
+        setattr(pkg, 'compiler', original_compiler)
+        set_compiler_environment_variables(pkg, env)
+
+    return _build_env_compilers
 
 
 def set_build_environment_variables(pkg, env, dirty):
@@ -449,6 +433,8 @@ def set_module_variables_for_package(pkg, module):
 
     # Platform-specific library suffix.
     m.dso_suffix = dso_suffix
+
+    m.build_env_compilers = build_env_compilers(pkg, env)
 
     def static_to_shared_library(static_lib, shared_lib=None, **kwargs):
         compiler_path = kwargs.get('compiler', m.spack_cc)
