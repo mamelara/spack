@@ -26,7 +26,7 @@ import os
 import re
 import llnl.util.tty as tty
 from spack.paths import build_env_path
-from spack.util.executable import which
+from spack.util.executable import which, Executable
 from spack.architecture import Platform, Target, NoPlatformError
 from spack.operating_systems.cray_frontend import CrayFrontend
 from spack.operating_systems.cnl import Cnl
@@ -47,6 +47,18 @@ def _fill_craype_targets_from_modules(targets, modules):
     for mod in modules:
         if 'craype-' in mod:
             targets.extend(re.findall(pattern, mod))
+
+
+class ConfigureExecutable(Executable):
+    """special callable for configure. For Cray machines it will wrap
+    configure and then swap the target modules for the frontend so that
+    the configure step passes"""
+
+    def __init__(self, configure):
+        super(ConfigureExecutable, self).__init__(configure)
+
+    def __call__(self, *args, **kwargs):
+        return super(ConfigureExecutable, self).__call__(*args, **kwargs)
 
 
 class Cray(Platform):
@@ -98,7 +110,7 @@ class Cray(Platform):
         self.add_operating_system(self.front_os, front_distro)
 
     @classmethod
-    def setup_platform_environment(cls, pkg, env):
+    def setup_platform_environment(cls, pkg, env, module):
         """ Change the linker to default dynamic to be more
             similar to linux/standard linker behavior
         """
@@ -118,6 +130,8 @@ class Cray(Platform):
         # Makes spack installed pkg-config work on Crays
         env.append_path("PKG_CONFIG_PATH", "/usr/lib64/pkgconfig")
         env.append_path("PKG_CONFIG_PATH", "/usr/local/lib64/pkgconfig")
+
+        module.configure = ConfigureExecutable(module.configure)
 
     @classmethod
     def detect(cls):

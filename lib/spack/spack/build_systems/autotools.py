@@ -34,7 +34,7 @@ from subprocess import check_call
 import llnl.util.tty as tty
 from llnl.util.filesystem import working_dir, force_remove
 from spack.package import PackageBase, run_after, run_before
-from spack.build_environment import ConfigureExecutable
+from spack.util.executable import Executable
 
 
 class AutotoolsPackage(PackageBase):
@@ -240,9 +240,8 @@ class AutotoolsPackage(PackageBase):
             raise RuntimeError(msg.format(self.configure_directory))
 
         # Monkey-patch the configure script in the corresponding module
-        inspect.getmodule(self).configure = ConfigureExecutable(
-            self.configure_abs_path, self
-        )
+        inspect.getmodule(self).configure = Executable(
+            self.configure_abs_path)
 
     def configure_args(self):
         """Produces a list containing all the arguments that must be passed to

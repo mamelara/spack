@@ -26,10 +26,10 @@ import os
 import pytest
 
 import spack.build_environment
+from spack.environment import EnvironmentModifications
 import spack.spec
 from spack.paths import build_env_path
-from spack.build_environment import (dso_suffix,
-                                     static_to_shared_library,
+from spack.build_environment import (dso_suffix, _static_to_shared_library,
                                      build_env_compilers)
 from spack.util.executable import Executable
 
@@ -128,15 +128,22 @@ def test_cc_not_changed_by_modules(monkeypatch):
 
 
 @pytest.mark.usefixtures('config', 'mock_packages')
-def test_cross_compiler_swapped(build_environment):
+def test_cross_compiler_swapped():
 
     s = spack.spec.Spec("cmake")
     s.concretize()
     pkg = s.package
+    env = EnvironmentModifications()
 
-    original_compiler = os.environ['CC']
+    original_compiler = os.environ['SPACK_CC']
 
-    with build_env_compilers():
-        swapped_compiler = os.environ['CC']
+    build_env_context_manager = build_env_compilers(pkg, env)
 
+    with build_env_context_manager():
+        swapped_compiler = os.environ['SPACK_CC']
+
+    # test that we swapped
     assert swapped_compiler and original_compiler != swapped_compiler
+
+    # test that we are back to our original
+    assert os.environ["SPACK_CC"] == original_compiler

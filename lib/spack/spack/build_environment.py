@@ -66,6 +66,7 @@ import llnl.util.tty as tty
 from llnl.util.tty.color import cescape, colorize
 from llnl.util.filesystem import mkdirp, install, install_tree
 
+import spack.architecture
 import spack.build_systems.cmake
 import spack.compilers
 import spack.config
@@ -133,21 +134,10 @@ class MakeExecutable(Executable):
         return super(MakeExecutable, self).__call__(*args, **kwargs)
 
 
-def set_compiler_environment_variables(pkg, env):
-    assert pkg.spec.concrete
-    compiler = pkg.compiler
+def set_compiler_cc_cxx_fc_f77_variables(compiler, env):
 
-    # Set compiler variables used by CMake and autotools
-    assert all(key in compiler.link_paths for key in (
-        'cc', 'cxx', 'f77', 'fc'))
-
-    # Populate an object with the list of environment modifications
-    # and return it
-    # TODO : add additional kwargs for better diagnostics, like requestor,
-    # ttyout, ttyerr, etc.
     link_dir = spack.paths.build_env_path
 
-    # Set SPACK compiler variables so that our wrapper knows what to call
     if compiler.cc:
         env.set('SPACK_CC', compiler.cc)
         env.set('CC', os.path.join(link_dir, compiler.link_paths['cc']))
@@ -162,6 +152,24 @@ def set_compiler_environment_variables(pkg, env):
         env.set('FC', os.path.join(link_dir, compiler.link_paths['fc']))
 
     return env
+
+
+def set_compiler_environment_variables(pkg, env):
+    assert pkg.spec.concrete
+    compiler = pkg.compiler
+
+    # Set compiler variables used by CMake and autotools
+    assert all(key in compiler.link_paths for key in (
+        'cc', 'cxx', 'f77', 'fc'))
+
+    # Populate an object with the list of environment modifications
+    # and return it
+    # TODO : add additional kwargs for better diagnostics, like requestor,
+    # ttyout, ttyerr, etc.
+
+    # Set SPACK compiler variables so that our wrapper knows what to call
+    env = set_compiler_cc_cxx_fc_f77_variables(compiler, env)
+
 
     # Set SPACK compiler rpath flags so that our wrapper knows what to use
     env.set('SPACK_CC_RPATH_ARG',  compiler.cc_rpath_arg)
@@ -211,6 +219,18 @@ def set_compiler_environment_variables(pkg, env):
     return env
 
 
+def choose_compiler_for_build_env(pkg, env):
+
+    frontend_arch = spack.architecture.frontend_arch_spec()
+    frontend_compilers = spack.compilers.compilers_for_arch(frontend_arch)
+    return frontend_compilers[0] # return first entry since we are fine with any
+
+
+def set_compiler_environment(pkg, compiler, env):
+    env = set_compiler_cc_cxx_fc_f77_variables(compiler, env)
+    env.apply_modifications()
+
+
 def build_env_compilers(pkg, env):
 
     @contextmanager
@@ -220,15 +240,13 @@ def build_env_compilers(pkg, env):
         to use a frontend environment whenever we attempt to cross compile and
         run configure tests"""
 
-        original_compiler = pkg.compiler
-        frontend_arch = frontend_arch_spec()
-        frontend_compilers = spack.compilers.compilers_for_arch(frontend_arch)
-        compiler = filter_compilers(front_compilers, pkg.compiler)
-        setattr(pkg, 'compiler', compiler)
-        set_compiler_environment_variables(pkg, env)
+        cross_compiler = pkg.compiler
+        compiler = choose_compiler_for_build_env(pkg, env)
+        set_compiler_environment(pkg, compiler, env)
+
         yield
-        setattr(pkg, 'compiler', original_compiler)
-        set_compiler_environment_variables(pkg, env)
+
+        set_compiler_environment(pkg, cross_compiler, env)
 
     return _build_env_compilers
 
@@ -372,7 +390,7 @@ def set_build_environment_variables(pkg, env, dirty):
     return env
 
 
-def set_module_variables_for_package(pkg, module):
+def set_module_variables_for_package(pkg, module, env):
     """Populate the module scope of install() with some useful functions.
        This makes things easier for package writers.
     """
@@ -397,7 +415,7 @@ def set_module_variables_for_package(pkg, module):
 
     # Find the configure script in the archive path
     # Don't use which for this; we want to find it in the current dir.
-    m.configure = ConfigureExecutable('./configure', pkg)
+    m.configure = Executable('./configure')
 
     m.cmake = Executable('cmake')
     m.ctest = Executable('ctest')
@@ -625,15 +643,15 @@ def setup_package(pkg, dirty):
         spkg = dspec.package
         modules = parent_class_modules(spkg.__class__)
         for mod in modules:
-            set_module_variables_for_package(spkg, mod)
-        set_module_variables_for_package(spkg, spkg.module)
+            set_module_variables_for_package(spkg, mod, spack_env)
+        set_module_variables_for_package(spkg, spkg.module, spack_env)
 
         # Allow dependencies to modify the module
         dpkg = dspec.package
         dpkg.setup_dependent_package(pkg.module, spec)
         dpkg.setup_dependent_environment(spack_env, run_env, spec)
 
-    set_module_variables_for_package(pkg, pkg.module)
+    set_module_variables_for_package(pkg, pkg.module, spack_env)
     pkg.setup_environment(spack_env, run_env)
 
     # Make sure nothing's strange about the Spack environment.
