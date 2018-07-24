@@ -219,34 +219,28 @@ def set_compiler_environment_variables(pkg, env):
     return env
 
 
-def choose_compiler_for_build_env(pkg, env):
-
-    frontend_arch = spack.architecture.frontend_arch_spec()
-    frontend_compilers = spack.compilers.compilers_for_arch(frontend_arch)
-    return frontend_compilers[0] # return first entry since we are fine with any
+def preserve_compiler_environment(env):
+    pass
 
 
-def set_compiler_environment(pkg, compiler, env):
-    env = set_compiler_cc_cxx_fc_f77_variables(compiler, env)
-    env.apply_modifications()
+def build_env_compilers(pkg, platform):
 
+    cross_compiler = pkg.compiler
 
-def build_env_compilers(pkg, env):
+    def _build_env_compiler(phase):
+        """Fork a sub process that will run the phase in a fork with a
+        preserved environment"""
+        try:
+            pid = os.fork()
+        except OSError:
+            exit("Could not create child process for frontend")
 
-    @contextmanager
-    def _build_env_compilers():
-        """A context manager that swaps the backend target architecture module
-        to the frontend architecture module and then back. This enables us
-        to use a frontend environment whenever we attempt to cross compile and
-        run configure tests"""
-
-        cross_compiler = pkg.compiler
-        compiler = choose_compiler_for_build_env(pkg, env)
-        set_compiler_environment(pkg, compiler, env)
-
-        yield
-
-        set_compiler_environment(pkg, cross_compiler, env)
+        # Inside the child process where we change to frontend env
+        if pid == 0:
+            preserve_compiler_environment()
+            platform.setup_frontend_environment()
+            phase()
+            exit()
 
     return _build_env_compilers
 
