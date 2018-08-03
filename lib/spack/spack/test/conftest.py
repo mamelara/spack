@@ -709,7 +709,6 @@ def mock_configure(tmpdir_factory, temp_env):
 
     tmpdir = tmpdir_factory.mktemp("mock_configure_dir")
     configure_exe = str(tmpdir.join("configure"))
-    print(configure_exe)
 
     with open(configure_exe, "w") as file:
         file.write("#!/bin/sh\n")
@@ -719,11 +718,3 @@ def mock_configure(tmpdir_factory, temp_env):
     path_put_first("PATH", [configure_exe])
 
     yield configure_exe
-
-
-@pytest.fixture(autouse=True)
-def mock_modulecmd(monkeypatch):
-    monkeypatch.setattr(spack.build_environment,
-                        "load_module",
-                        lambda mod: mod
-                        )

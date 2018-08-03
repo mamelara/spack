@@ -30,7 +30,7 @@ from spack.util.executable import which, Executable
 from spack.architecture import Platform, Target, NoPlatformError
 from spack.operating_systems.cray_frontend import CrayFrontend
 from spack.operating_systems.cnl import Cnl
-from spack.util.module_cmd import get_module_cmd, unload_module
+from spack.util.module_cmd import get_module_cmd, unload_module, load_module
 
 
 def _get_modules_in_modulecmd_output(output):
@@ -108,6 +108,10 @@ class Cray(Platform):
 
         self.add_operating_system(self.back_os, back_distro)
         self.add_operating_system(self.front_os, front_distro)
+
+    def setup_frontend_compiler_environment(self, env):
+        frontend_target = self.target("frontend").module_name
+        load_module(frontend)
 
     @classmethod
     def setup_platform_environment(cls, pkg, env, module):

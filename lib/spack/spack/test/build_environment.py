@@ -29,9 +29,19 @@ import spack.build_environment
 from spack.environment import EnvironmentModifications
 import spack.spec
 from spack.paths import build_env_path
+<<<<<<< Updated upstream
 from spack.build_environment import (dso_suffix, _static_to_shared_library,
                                      build_env_compilers)
+=======
+<<<<<<< Updated upstream
+from spack.build_environment import dso_suffix, _static_to_shared_library
+>>>>>>> Stashed changes
 from spack.util.executable import Executable
+=======
+from spack.build_environment import (dso_suffix, _static_to_shared_library,
+                                     build_env_compilers)
+from spack.util.executable import Executable, which
+>>>>>>> Stashed changes
 
 
 @pytest.fixture
@@ -147,3 +157,21 @@ def test_cross_compiler_swapped():
 
     # test that we are back to our original
     assert os.environ["SPACK_CC"] == original_compiler
+
+
+@pytest.mark.usefixtures('config', 'mock_packages')
+def test_cross_compiler_swapped(mock_configure):
+
+    s = spack.spec.Spec('mpileaks')
+    s.concretize()
+    pkg = s.package
+    platform = pkg.architecture.platform
+    env = EnvironmentModifications()
+
+    os.environ['CC'] = 'back-end-compiler'
+    configure = which('configure')
+    with_frontend_comp = build_env_compilers(pkg, platform, env)
+    configure = with_frontend_comp(configure)
+    swapped_compiler = configure('CC', stdout=str)
+
+    assert swapped_compiler and os.environ['CC'] != swapped_compiler

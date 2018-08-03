@@ -52,3 +52,7 @@ class Test(Platform):
     @classmethod
     def detect(self):
         return True
+
+    def setup_frontend_environment(self, env):
+        env.set('CC', 'test_compiler')
+        env.apply_modifications()

@@ -537,10 +537,10 @@ class BaseContext(tengine.Context):
             modules = build_environment.parent_class_modules(package.__class__)
             for mod in modules:
                 build_environment.set_module_variables_for_package(
-                    package, mod
+                    package, mod, env
                 )
             build_environment.set_module_variables_for_package(
-                package, package.module
+                package, package.module, env
             )
             package.setup_dependent_package(
                 self.spec.package.module, self.spec
@@ -548,7 +548,7 @@ class BaseContext(tengine.Context):
             package.setup_dependent_environment(_, env, self.spec)
         # Package specific modifications
         build_environment.set_module_variables_for_package(
-            self.spec.package, self.spec.package.module
+            self.spec.package, self.spec.package.module, env
         )
         self.spec.package.setup_environment(_, env)
 

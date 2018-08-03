@@ -200,6 +200,11 @@ class Platform(object):
         """
         pass
 
+    def setup_frontend_environment(self, env):
+        """Subclass can override this method if it requires any
+        platform-specific way of building an environment for the frontend"""
+        pass
+
     @classmethod
     def detect(self):
         """ Subclass is responsible for implementing this method.
