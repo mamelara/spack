@@ -239,6 +239,27 @@ def set_compiler_environment_variables(pkg, env):
     return env
 
 
+class BuildEnvCompilers(object):
+
+    def __init__(self, pkg, platform, env):
+        self.__pkg = pkg
+        self.__platform = platform
+        self.__env = env
+
+    def __enter__(self):
+        try:
+            self.__pid = os.fork()
+        except OSError:
+            exit("Could not create child process for frontend build environment")
+        if self.__pid == 0:
+            self.__platform.setup_frontend_environment(self.__env)
+        else:
+            os.waitpid(self.__pid, 0)
+
+    def __exit__(self, *args):
+        return
+
+
 def set_build_environment_variables(pkg, env, dirty):
     """Ensure a clean install environment when we build packages.
 
@@ -431,6 +452,9 @@ def _set_variables_for_single_module(pkg, module):
 
     # Platform-specific library suffix.
     m.dso_suffix = dso_suffix
+
+    m.build_env_compilers = BuildEnvCompilers(pkg, pkg.architecture.platform,
+                                              env)
 
     def static_to_shared_library(static_lib, shared_lib=None, **kwargs):
         compiler_path = kwargs.get('compiler', m.spack_cc)
