@@ -180,6 +180,12 @@ class Platform(object):
         """
 
     @classmethod
+    def setup_frontend_build_environment(self, env):
+        """ Subclass can override this method if it requires any
+            platform-specific way of building an environment for the frontend
+        """
+
+    @classmethod
     def detect(cls):
         """ Subclass is responsible for implementing this method.
             Returns True if the Platform class detects that
