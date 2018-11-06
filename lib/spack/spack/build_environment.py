@@ -239,27 +239,6 @@ def set_compiler_environment_variables(pkg, env):
     return env
 
 
-class BuildEnvCompilers(object):
-
-    def __init__(self, pkg, platform, env):
-        self.__pkg = pkg
-        self.__platform = platform
-        self.__env = env
-
-    def __enter__(self):
-        try:
-            self.__pid = os.fork()
-        except OSError:
-            exit("Could not create child process for frontend build environment")
-        if self.__pid == 0:
-            self.__platform.setup_frontend_environment(self.__env)
-        else:
-            os.waitpid(self.__pid, 0)
-
-    def __exit__(self, *args):
-        return
-
-
 def set_build_environment_variables(pkg, env, dirty):
     """Ensure a clean install environment when we build packages.
 
@@ -391,8 +370,42 @@ def set_build_environment_variables(pkg, env, dirty):
     return env
 
 
+<<<<<<< HEAD
 def _set_variables_for_single_module(pkg, module):
     """Helper function to set module variables for single module."""
+=======
+def use_frontend_environment(platform, env):
+    """This function will return a nested closed function. The first will
+    let the wrapper function be in module scope to the package class and then
+    the second will wrap the executable to execute it in a different
+    environment."""
+
+    def _module_scoped_function(func):
+
+        def _execute_in_frontend_environment(*args):
+            """Uses a helper function that sets up the frontend environment
+            and then executes a function  and it's args in a subprocess.
+            """
+
+            def _helper(*args):
+                platform.setup_frontend_environment(env)
+                return func(*args)
+
+            p = multiprocessing.Process(target=_helper,
+                                        args=(args))
+            p.start()
+            p.join()
+
+        return _execute_in_frontend_environment
+
+    return _module_scoped_function
+
+
+def set_module_variables_for_package(pkg, module, env):
+    """Populate the module scope of install() with some useful functions.
+       This makes things easier for package writers.
+    """
+>>>>>>> Add wrapper that executes func in subprocess
     # number of jobs spack will build with.
     jobs = spack.config.get('config:build_jobs') or multiprocessing.cpu_count()
     if not pkg.parallel:
@@ -453,8 +466,8 @@ def _set_variables_for_single_module(pkg, module):
     # Platform-specific library suffix.
     m.dso_suffix = dso_suffix
 
-    m.build_env_compilers = BuildEnvCompilers(pkg, pkg.architecture.platform,
-                                              env)
+    m.build_env_compilers = use_frontend_environment(pkg.architecture.platform,
+                                                     env)
 
     def static_to_shared_library(static_lib, shared_lib=None, **kwargs):
         compiler_path = kwargs.get('compiler', m.spack_cc)
@@ -824,6 +837,8 @@ def fork(pkg, function, dirty, fake):
         raise child_result
 
     return child_result
+
+
 
 
 def get_package_context(traceback, context=3):
