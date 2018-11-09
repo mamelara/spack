@@ -323,23 +323,26 @@ Let's look at a couple of other examples and go through them:
 
 .. code-block:: console
 
-    $ spack edit cbench
+    $ spack edit esmf
 
 Some packages allow environment variables to be set and will honor them.
 Packages that use :code:`?=` for assignment in their :code:`Makefile`
-can be set using environment variables. In our :code:`cbench` example we
-set two environment variables in our :code:`edit()` method:
+can be set using environment variables. In our :code:`esmf` example we
+set various environment variables in our :code:`edit()` method:
 
 .. code-block:: python
 
     def edit(self, spec, prefix):
-        # The location of the Cbench source tree
-        env['CBENCHHOME'] = self.stage.source_path
+        for var in os.environ:
+            if var.startswith('ESMF_'):
+                os.environ.pop(var)
 
-        # The location that will contain all your tests and your results
-        env['CBENCHTEST'] = prefix
+        os.environ['ESMF_DIR'] = os.getcwd()
+        os.environ['ESMF_INSTALL_PREFIX'] = prefix
+        os.environ['ESMF_INSTALL_BINDIR'] = 'bin'
+        os.environ['ESMF_INSTALL_LIBDIR'] = 'lib'
+        os.environ['ESMF_INSTALL_MODDIR'] = 'include'
 
-        # ... more code
 
 As you may have noticed, we didn't really write anything to the :code:`Makefile`
 but rather we set environment variables that will override variables set in
@@ -529,10 +532,6 @@ In the end our :code:`cmake` line will look like this (example is :code:`xrootd`
 
     $ cmake $HOME/spack/var/spack/stage/xrootd-4.6.0-4ydm74kbrp4xmcgda5upn33co5pwddyk/xrootd-4.6.0 -G Unix Makefiles -DCMAKE_INSTALL_PREFIX:PATH=$HOME/spack/opt/spack/darwin-sierra-x86_64/clang-9.0.0-apple/xrootd-4.6.0-4ydm74kbrp4xmcgda5upn33co5pwddyk -DCMAKE_BUILD_TYPE:STRING=RelWithDebInfo -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON -DCMAKE_FIND_FRAMEWORK:STRING=LAST -DCMAKE_INSTALL_RPATH_USE_LINK_PATH:BOOL=FALSE -DCMAKE_INSTALL_RPATH:STRING=$HOME/spack/opt/spack/darwin-sierra-x86_64/clang-9.0.0-apple/xrootd-4.6.0-4ydm74kbrp4xmcgda5upn33co5pwddyk/lib:$HOME/spack/opt/spack/darwin-sierra-x86_64/clang-9.0.0-apple/xrootd-4.6.0-4ydm74kbrp4xmcgda5upn33co5pwddyk/lib64 -DCMAKE_PREFIX_PATH:STRING=$HOME/spack/opt/spack/darwin-sierra-x86_64/clang-9.0.0-apple/cmake-3.9.4-hally3vnbzydiwl3skxcxcbzsscaasx5
 
-
-Saves a lot of typing doesn't it?
-
-
 Let's try to recreate callpath_:
 
 .. _callpath: https://github.com/LLNL/callpath.git
@@ -595,7 +594,7 @@ different location is found in :code:`spades`.
 
 .. code-block:: console
 
-    $ spack edit spade
+    $ spack edit spades
 
 .. code-block:: python
 
