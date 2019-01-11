@@ -370,10 +370,6 @@ def set_build_environment_variables(pkg, env, dirty):
     return env
 
 
-<<<<<<< HEAD
-def _set_variables_for_single_module(pkg, module):
-    """Helper function to set module variables for single module."""
-=======
 def use_frontend_environment(platform, env):
     """This function will return a nested closed function. The first will
     let the wrapper function be in module scope to the package class and then
@@ -401,11 +397,11 @@ def use_frontend_environment(platform, env):
     return _module_scoped_function
 
 
-def set_module_variables_for_package(pkg, module, env):
+def _set_variables_for_single_module(pkg, module):
+    """Helper function to set module variables for single module."""
     """Populate the module scope of install() with some useful functions.
        This makes things easier for package writers.
     """
->>>>>>> Add wrapper that executes func in subprocess
     # number of jobs spack will build with.
     jobs = spack.config.get('config:build_jobs') or multiprocessing.cpu_count()
     if not pkg.parallel:
