@@ -22,19 +22,18 @@ class Unzip(MakefilePackage):
     @property
     def build_targets(self):
         if not self.spec.satisfies("platform=cray target=be"):
-            make_args.append("generic")
-            return make_args
+            self.make_args.append("generic")
+            return self.make_args
         else:
             raise InstallError("""Unzip does not build for the backend
-architecture on Crays. If you want to use unzip for the backend it is recommended
+architecture on Cray. If you want to use unzip for the backend it is recommended
 that you add unzip to packages.yaml:
 
 packages:
    unzip:
      buildable: false
      paths:
-       unzip: /usr
-""")
+       unzip: /usr """)
 
     @property
     def install_targets(self):
